@@ -20,7 +20,8 @@
                     const meshWidth = box.max.x - box.min.x;
                     const meshHeight = box.max.y - box.min.y;
                     const markerSize = 1;
-                    const fitScale = markerSize / Math.max(meshWidth, meshHeight);
+                    const sizeMultiplier = 3;
+                    const fitScale = (markerSize / Math.max(meshWidth, meshHeight)) * sizeMultiplier;
 
                     heartMesh.scale.set(fitScale, fitScale, fitScale);
                     this.el.setObject3D('mesh', heartMesh);
