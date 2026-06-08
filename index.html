@@ -12,17 +12,18 @@
                     const THREE = AFRAME.THREE;
                     const { vertices, trianglesIndexes } = useCoordinates(THREE);
                     const heartMesh = createHeartMesh(THREE, vertices, trianglesIndexes);
-                    addWireFrameToMesh(THREE, heartMesh, heartMesh.geometry);
 
                     heartMesh.geometry.center();
-                    this.heartMesh = heartMesh;
-                    this.scaleThreshold = false;
+                    heartMesh.geometry.computeBoundingBox();
+
+                    const box = heartMesh.geometry.boundingBox;
+                    const meshWidth = box.max.x - box.min.x;
+                    const meshHeight = box.max.y - box.min.y;
+                    const markerSize = 1;
+                    const fitScale = markerSize / Math.max(meshWidth, meshHeight);
+
+                    heartMesh.scale.set(fitScale, fitScale, fitScale);
                     this.el.setObject3D('mesh', heartMesh);
-                },
-                tick: function () {
-                    const mesh = this.heartMesh;
-                    mesh.rotation.y -= 0.005;
-                    beatingAnimation(mesh, this);
                 }
             });
 
@@ -94,46 +95,12 @@
 
                 return new THREE.Mesh(geometry, material);
             }
-
-            function addWireFrameToMesh(THREE, mesh, geometry) {
-                const wireframe = new THREE.WireframeGeometry(geometry);
-                const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-                const line = new THREE.LineSegments(wireframe, lineMaterial);
-                mesh.add(line);
-            }
-
-            const beatingIncrement = 0.008;
-
-            function beatingAnimation(mesh, state) {
-                if (mesh.scale.x < 1.4 && !state.scaleThreshold) {
-                    mesh.scale.x += beatingIncrement * 2;
-                    mesh.scale.y += beatingIncrement * 2;
-                    mesh.scale.z += beatingIncrement * 2;
-
-                    if (mesh.scale.x >= 1.4) {
-                        state.scaleThreshold = true;
-                    }
-                } else if (state.scaleThreshold) {
-                    mesh.scale.x -= beatingIncrement;
-                    mesh.scale.y -= beatingIncrement;
-                    mesh.scale.z -= beatingIncrement;
-
-                    if (mesh.scale.x <= 1) {
-                        state.scaleThreshold = false;
-                    }
-                }
-            }
         </script>
     </head>
     <body style="margin: 0; overflow: hidden;">
         <a-scene embedded arjs="sourceType: webcam;">
-            <a-marker preset="hiro">
-                <a-entity
-                    heart-mesh
-                    position="0 0.35 0"
-                    scale="0.04 0.04 0.04"
-                    rotation="-90 0 0">
-                </a-entity>
+            <a-marker preset="hiro" size="1">
+                <a-entity heart-mesh position="0 0 0"></a-entity>
             </a-marker>
             <a-entity camera></a-entity>
         </a-scene>
