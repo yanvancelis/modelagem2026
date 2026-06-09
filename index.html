@@ -81,35 +81,89 @@
                 bottom: 0;
                 z-index: 9998;
                 display: flex;
-                gap: 12px;
-                padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-                background: rgba(15, 23, 42, 0.92);
-                backdrop-filter: blur(8px);
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 28px calc(24px + env(safe-area-inset-bottom));
+                background: transparent;
                 font-family: system-ui, -apple-system, sans-serif;
+                pointer-events: none;
             }
 
             #ar-controls.hidden {
                 display: none;
             }
 
-            #ar-controls button {
+            #ar-controls .controls-side {
+                width: 72px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: auto;
+            }
+
+            #ar-controls .controls-center {
                 flex: 1;
-                padding: 14px 16px;
-                border: none;
-                border-radius: 12px;
-                font-size: 0.95rem;
-                font-weight: 600;
-                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: auto;
             }
 
             #btn-change-model {
-                background: #334155;
-                color: #f8fafc;
+                width: 52px;
+                height: 52px;
+                padding: 0;
+                border: none;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.18);
+                color: #fff;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(6px);
+                transition: background 0.2s, transform 0.15s;
+            }
+
+            #btn-change-model:active {
+                transform: scale(0.94);
+                background: rgba(255, 255, 255, 0.28);
+            }
+
+            #btn-change-model svg {
+                width: 26px;
+                height: 26px;
             }
 
             #btn-capture-photo {
-                background: #dc2626;
-                color: #fff;
+                width: 76px;
+                height: 76px;
+                padding: 0;
+                border: 4px solid #fff;
+                border-radius: 50%;
+                background: transparent;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.15s;
+            }
+
+            #btn-capture-photo:active {
+                transform: scale(0.92);
+            }
+
+            #btn-capture-photo .shutter-inner {
+                width: 62px;
+                height: 62px;
+                border-radius: 50%;
+                background: #fff;
+                transition: transform 0.15s, background 0.15s;
+            }
+
+            #btn-capture-photo:active .shutter-inner {
+                transform: scale(0.88);
+                background: #e2e8f0;
             }
         </style>
         <script>
@@ -311,8 +365,22 @@
         </div>
 
         <div id="ar-controls" class="hidden">
-            <button id="btn-change-model" type="button" onclick="showMenu()">Escolher outro</button>
-            <button id="btn-capture-photo" type="button" onclick="capturePhoto()">Capturar foto</button>
+            <div class="controls-side">
+                <button id="btn-change-model" type="button" onclick="showMenu()" aria-label="Trocar modelo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                        <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                        <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                        <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                    </svg>
+                </button>
+            </div>
+            <div class="controls-center">
+                <button id="btn-capture-photo" type="button" onclick="capturePhoto()" aria-label="Capturar foto">
+                    <span class="shutter-inner"></span>
+                </button>
+            </div>
+            <div class="controls-side" aria-hidden="true"></div>
         </div>
 
         <a-scene id="ar-scene" embedded vr-mode-ui="enabled: false" renderer="preserveDrawingBuffer: true">
