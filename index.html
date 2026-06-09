@@ -232,16 +232,53 @@
 
             function capturePhoto() {
                 var scene = document.getElementById('ar-scene');
-                var canvas = scene.canvas;
+                var video = document.querySelector('video');
+                var arCanvas = scene.canvas;
 
-                if (!canvas) {
+                if (!video || !arCanvas || video.readyState < 2) {
+                    alert('Aguarde a câmera carregar antes de capturar.');
                     return;
                 }
 
                 requestAnimationFrame(function () {
+                    var output = document.createElement('canvas');
+                    var viewWidth = window.innerWidth;
+                    var viewHeight = window.innerHeight;
+                    var ctx = output.getContext('2d');
+                    var videoWidth = video.videoWidth;
+                    var videoHeight = video.videoHeight;
+                    var videoRatio = videoWidth / videoHeight;
+                    var viewRatio = viewWidth / viewHeight;
+                    var sourceX;
+                    var sourceY;
+                    var sourceWidth;
+                    var sourceHeight;
+
+                    output.width = viewWidth;
+                    output.height = viewHeight;
+
+                    if (videoRatio > viewRatio) {
+                        sourceHeight = videoHeight;
+                        sourceWidth = videoHeight * viewRatio;
+                        sourceX = (videoWidth - sourceWidth) / 2;
+                        sourceY = 0;
+                    } else {
+                        sourceWidth = videoWidth;
+                        sourceHeight = videoWidth / viewRatio;
+                        sourceX = 0;
+                        sourceY = (videoHeight - sourceHeight) / 2;
+                    }
+
+                    ctx.drawImage(
+                        video,
+                        sourceX, sourceY, sourceWidth, sourceHeight,
+                        0, 0, viewWidth, viewHeight
+                    );
+                    ctx.drawImage(arCanvas, 0, 0, viewWidth, viewHeight);
+
                     var link = document.createElement('a');
                     link.download = 'modelagem2026-' + Date.now() + '.png';
-                    link.href = canvas.toDataURL('image/png');
+                    link.href = output.toDataURL('image/png');
                     link.click();
                 });
             }
