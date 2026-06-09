@@ -103,17 +103,15 @@
     <body style="margin: 0; overflow: hidden;">
         <a-scene embedded arjs="sourceType: webcam;">
             <a-assets>
-                <img id="escudo" src="escudo-vasco.svg">
+                <a-asset-item id="suzane" src="suzane.glb"></a-asset-item>
             </a-assets>
             <a-marker preset="hiro" size="1">
-                <a-image
-                    src="#escudo"
+                <a-entity
+                    gltf-model="#suzane"
                     position="0 0.5 0"
                     rotation="-90 0 0"
-                    width="3"
-                    height="3.79"
-                    material="transparent: true; alphaTest: 0.01; shader: flat">
-                </a-image>
+                    scale="0.5 0.5 0.5">
+                </a-entity>
                 <!-- <a-entity heart-mesh position="0 0 0"></a-entity> -->
             </a-marker>
             <a-entity camera></a-entity>
