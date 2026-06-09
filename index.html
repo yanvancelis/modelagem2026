@@ -73,6 +73,44 @@
                 font-size: 0.85rem;
                 color: #94a3b8;
             }
+
+            #ar-controls {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 9998;
+                display: flex;
+                gap: 12px;
+                padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+                background: rgba(15, 23, 42, 0.92);
+                backdrop-filter: blur(8px);
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            #ar-controls.hidden {
+                display: none;
+            }
+
+            #ar-controls button {
+                flex: 1;
+                padding: 14px 16px;
+                border: none;
+                border-radius: 12px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            #btn-change-model {
+                background: #334155;
+                color: #f8fafc;
+            }
+
+            #btn-capture-photo {
+                background: #dc2626;
+                color: #fff;
+            }
         </style>
         <script>
             AFRAME.registerComponent('heart-mesh', {
@@ -165,10 +203,47 @@
                 return new THREE.Mesh(geometry, material);
             }
 
+            var MODELS = ['padrao', 'coracao', 'escudo', 'suzane'];
+
+            function hideAllModels() {
+                MODELS.forEach(function (id) {
+                    document.getElementById('model-' + id).setAttribute('visible', 'false');
+                });
+            }
+
             function startAR(modelId) {
+                hideAllModels();
                 document.getElementById('menu').classList.add('hidden');
-                document.getElementById('ar-scene').setAttribute('arjs', 'sourceType: webcam;');
+                document.getElementById('ar-controls').classList.remove('hidden');
+
+                var scene = document.getElementById('ar-scene');
+                if (!scene.getAttribute('arjs')) {
+                    scene.setAttribute('arjs', 'sourceType: webcam;');
+                }
+
                 document.getElementById('model-' + modelId).setAttribute('visible', 'true');
+            }
+
+            function showMenu() {
+                hideAllModels();
+                document.getElementById('menu').classList.remove('hidden');
+                document.getElementById('ar-controls').classList.add('hidden');
+            }
+
+            function capturePhoto() {
+                var scene = document.getElementById('ar-scene');
+                var canvas = scene.canvas;
+
+                if (!canvas) {
+                    return;
+                }
+
+                requestAnimationFrame(function () {
+                    var link = document.createElement('a');
+                    link.download = 'modelagem2026-' + Date.now() + '.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
             }
         </script>
     </head>
@@ -198,7 +273,12 @@
             </div>
         </div>
 
-        <a-scene id="ar-scene" embedded vr-mode-ui="enabled: false">
+        <div id="ar-controls" class="hidden">
+            <button id="btn-change-model" type="button" onclick="showMenu()">Escolher outro</button>
+            <button id="btn-capture-photo" type="button" onclick="capturePhoto()">Capturar foto</button>
+        </div>
+
+        <a-scene id="ar-scene" embedded vr-mode-ui="enabled: false" renderer="preserveDrawingBuffer: true">
             <a-assets>
                 <a-asset-item id="suzane" src="suzane.glb"></a-asset-item>
                 <img id="escudo" src="escudo-vasco.svg">
