@@ -6,7 +6,74 @@
         <title>Modelagem Tridimensional 2026</title>
         <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
-        <!--
+        <style>
+            #menu {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+                font-family: system-ui, -apple-system, sans-serif;
+                color: #f8fafc;
+            }
+
+            #menu.hidden {
+                display: none;
+            }
+
+            .menu-card {
+                width: 100%;
+                max-width: 420px;
+            }
+
+            .menu-card h1 {
+                margin: 0 0 8px;
+                font-size: 1.5rem;
+                font-weight: 700;
+            }
+
+            .menu-card p {
+                margin: 0 0 24px;
+                color: #94a3b8;
+                line-height: 1.5;
+            }
+
+            .menu-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .menu-options button {
+                width: 100%;
+                padding: 14px 18px;
+                border: 1px solid #334155;
+                border-radius: 12px;
+                background: #1e293b;
+                color: #f8fafc;
+                font-size: 1rem;
+                text-align: left;
+                cursor: pointer;
+                transition: background 0.2s, border-color 0.2s;
+            }
+
+            .menu-options button:hover,
+            .menu-options button:focus {
+                background: #334155;
+                border-color: #64748b;
+                outline: none;
+            }
+
+            .menu-options button span {
+                display: block;
+                margin-top: 4px;
+                font-size: 0.85rem;
+                color: #94a3b8;
+            }
+        </style>
         <script>
             AFRAME.registerComponent('heart-mesh', {
                 init: function () {
@@ -97,22 +164,69 @@
 
                 return new THREE.Mesh(geometry, material);
             }
+
+            function startAR(modelId) {
+                document.getElementById('menu').classList.add('hidden');
+                document.getElementById('ar-scene').setAttribute('arjs', 'sourceType: webcam;');
+                document.getElementById('model-' + modelId).setAttribute('visible', 'true');
+            }
         </script>
-        -->
     </head>
     <body style="margin: 0; overflow: hidden;">
-        <a-scene embedded arjs="sourceType: webcam;">
+        <div id="menu">
+            <div class="menu-card">
+                <h1>Modelagem Tridimensional 2026</h1>
+                <p>Escolha o modelo que deseja ver em realidade aumentada. A câmera será aberta após a seleção.</p>
+                <div class="menu-options">
+                    <button type="button" data-model="padrao" onclick="startAR('padrao')">
+                        Modelo padrão do framework
+                        <span>Esfera vermelha e plano verde (exemplo AR.js)</span>
+                    </button>
+                    <button type="button" data-model="coracao" onclick="startAR('coracao')">
+                        Coração 3D
+                        <span>Malha customizada em Three.js</span>
+                    </button>
+                    <button type="button" data-model="escudo" onclick="startAR('escudo')">
+                        Escudo do Vasco
+                        <span>Imagem SVG sobre o marcador</span>
+                    </button>
+                    <button type="button" data-model="suzane" onclick="startAR('suzane')">
+                        Suzane
+                        <span>Modelo 3D em GLB</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <a-scene id="ar-scene" embedded vr-mode-ui="enabled: false">
             <a-assets>
                 <a-asset-item id="suzane" src="suzane.glb"></a-asset-item>
+                <img id="escudo" src="escudo-vasco.svg">
             </a-assets>
             <a-marker preset="hiro" size="1">
-                <a-entity
-                    gltf-model="#suzane"
-                    position="0 1.97 0"
-                    rotation="0 0 0"
-                    scale="2 2 2">
+                <a-entity id="model-padrao" visible="false">
+                    <a-sphere position="0 0.5 0" radius="0.5" color="#EF2D5E"></a-sphere>
+                    <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1" color="#7BC8A4"></a-plane>
                 </a-entity>
-                <!-- <a-entity heart-mesh position="0 0 0"></a-entity> -->
+                <a-entity id="model-coracao" heart-mesh visible="false" position="0 0 0"></a-entity>
+                <a-entity id="model-escudo" visible="false">
+                    <a-image
+                        src="#escudo"
+                        position="0 0.5 0"
+                        rotation="-90 0 0"
+                        width="3"
+                        height="3.79"
+                        material="transparent: true; alphaTest: 0.01; shader: flat">
+                    </a-image>
+                </a-entity>
+                <a-entity
+                    id="model-suzane"
+                    visible="false"
+                    gltf-model="#suzane"
+                    position="0 1.48 0"
+                    rotation="0 0 0"
+                    scale="1.5 1.5 1.5">
+                </a-entity>
             </a-marker>
             <a-entity camera></a-entity>
         </a-scene>
