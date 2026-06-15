@@ -13,15 +13,13 @@ import {
   type GalleryPhoto,
 } from "@/lib/gallery-db";
 import { registerActiveArSession, scheduleArCleanup, loadArScripts } from "@/lib/ar-scripts";
-import type { ArModelId } from "@/lib/pieces";
 
 type ArExperienceProps = {
   slug: string;
   title: string;
-  modelId: ArModelId;
 };
 
-export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
+export function ArExperience({ slug, title }: ArExperienceProps) {
   const router = useRouter();
   const sceneHostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -62,27 +60,10 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
           >
             <a-assets timeout="120000">
               <a-asset-item id="suzane" src="/models/suzane.glb"></a-asset-item>
-              <img id="escudo" src="/escudo-vasco.svg" crossorigin="anonymous">
             </a-assets>
             <a-marker preset="hiro" size="1">
-              <a-entity id="model-padrao" visible="${modelId === "padrao"}">
-                <a-sphere position="0 0.5 0" radius="0.5" color="#D85A82"></a-sphere>
-                <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1" color="#2D9A78"></a-plane>
-              </a-entity>
-              <a-entity id="model-coracao" heart-mesh visible="${modelId === "coracao"}" position="0 0 0"></a-entity>
-              <a-entity id="model-escudo" visible="${modelId === "escudo"}">
-                <a-image
-                  src="#escudo"
-                  position="0 0.5 0"
-                  rotation="-90 0 0"
-                  width="3"
-                  height="3.79"
-                  material="transparent: true; alphaTest: 0.01; shader: flat">
-                </a-image>
-              </a-entity>
               <a-entity
                 id="model-suzane"
-                visible="${modelId === "suzane"}"
                 gltf-model="#suzane"
                 position="0 1.48 0"
                 rotation="0 0 0"
@@ -93,15 +74,13 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
           </a-scene>
         `;
 
-        const sceneEl = sceneHostRef.current.querySelector("#ar-scene") as
-          | (HTMLElement & {
-              systems?: { arjs?: { _arSession?: unknown } };
-            })
-          | null;
+        const sceneEl = sceneHostRef.current.querySelector("#ar-scene");
         if (sceneEl) {
-          sceneEl.addEventListener("loaded", () => registerActiveArSession(sceneEl), {
-            once: true,
-          });
+          sceneEl.addEventListener(
+            "loaded",
+            () => registerActiveArSession(sceneEl as Parameters<typeof registerActiveArSession>[0]),
+            { once: true },
+          );
         }
 
         setReady(true);
@@ -115,7 +94,7 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
       scheduleArCleanup();
       if (host) host.innerHTML = "";
     };
-  }, [modelId]);
+  }, []);
 
   const composePhoto = useCallback((): Promise<string | null> => {
     return new Promise((resolve) => {

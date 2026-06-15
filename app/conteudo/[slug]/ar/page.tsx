@@ -14,7 +14,7 @@ export default async function ArPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ArExperience slug={piece.slug} title={piece.title} modelId={piece.arModelId} />;
+  return <ArExperience slug={piece.slug} title={piece.title} />;
 }
 
 export async function generateMetadata({ params }: PageProps) {
