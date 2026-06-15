@@ -124,12 +124,76 @@ export function registerActiveArSession(scene: AframeScene): void {
     const session = scene.systems?.arjs?._arSession;
     if (session?.arSource) {
       activeArSession = session;
+      fixArVideoPlacement();
       return;
     }
     requestAnimationFrame(tryRegister);
   };
 
   tryRegister();
+}
+
+export function fixArVideoPlacement(): void {
+  if (typeof window === "undefined") return;
+
+  const video = document.body.querySelector(":scope > video");
+  if (!video) return;
+
+  video.setAttribute("playsinline", "");
+  video.setAttribute("webkit-playsinline", "");
+  video.setAttribute("autoplay", "");
+  video.setAttribute("muted", "");
+
+  Object.assign((video as HTMLVideoElement).style, {
+    position: "fixed",
+    inset: "0",
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    zIndex: "0",
+    margin: "0",
+    transform: "none",
+  });
+
+  void (video as HTMLVideoElement).play?.().catch(() => undefined);
+}
+
+export function watchArVideoPlacement(): () => void {
+  if (typeof window === "undefined") return () => undefined;
+
+  let videoObserver: MutationObserver | null = null;
+  let rafId = 0;
+  let attempts = 0;
+
+  const attachVideoObserver = (video: HTMLVideoElement) => {
+    videoObserver?.disconnect();
+    videoObserver = new MutationObserver(() => fixArVideoPlacement());
+    videoObserver.observe(video, { attributes: true, attributeFilter: ["style"] });
+  };
+
+  const tick = () => {
+    fixArVideoPlacement();
+    const video = document.body.querySelector(":scope > video") as HTMLVideoElement | null;
+    if (video) attachVideoObserver(video);
+    attempts += 1;
+    if (attempts < 180) rafId = requestAnimationFrame(tick);
+  };
+
+  tick();
+
+  const bodyObserver = new MutationObserver(() => {
+    fixArVideoPlacement();
+    const video = document.body.querySelector(":scope > video") as HTMLVideoElement | null;
+    if (video) attachVideoObserver(video);
+  });
+
+  bodyObserver.observe(document.body, { childList: true });
+
+  return () => {
+    cancelAnimationFrame(rafId);
+    videoObserver?.disconnect();
+    bodyObserver.disconnect();
+  };
 }
 
 function disposeActiveArSession(): void {
@@ -215,7 +279,7 @@ export function loadArScripts(): Promise<void> {
     loadScript("https://aframe.io/releases/1.3.0/aframe.min.js")
       .then(() =>
         loadScript(
-          "https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js",
+          "https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js",
         ),
       )
       .then(() => {

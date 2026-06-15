@@ -12,7 +12,7 @@ import {
   savePhotoToGallery,
   type GalleryPhoto,
 } from "@/lib/gallery-db";
-import { registerActiveArSession, scheduleArCleanup, loadArScripts } from "@/lib/ar-scripts";
+import { registerActiveArSession, scheduleArCleanup, loadArScripts, watchArVideoPlacement } from "@/lib/ar-scripts";
 
 type ArExperienceProps = {
   slug: string;
@@ -43,7 +43,9 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
 
   useEffect(() => {
     let cancelled = false;
+    let stopWatchingVideo: (() => void) | undefined;
     const host = sceneHostRef.current;
+    document.body.classList.add("ar-active");
 
     loadArScripts()
       .then(() => {
@@ -54,9 +56,9 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
             id="ar-scene"
             embedded
             vr-mode-ui="enabled: false"
-            renderer="preserveDrawingBuffer: true"
-            arjs="sourceType: webcam;"
-            style="position:absolute;inset:0;"
+            renderer="alpha: true; antialias: true; precision: medium; preserveDrawingBuffer: true; logarithmicDepthBuffer: true;"
+            arjs="sourceType: webcam; debugUIEnabled: false;"
+            style="position:absolute;inset:0;z-index:1;"
           >
             <a-assets timeout="120000">
               <a-asset-item id="suzane" src="/models/suzane.glb"></a-asset-item>
@@ -83,6 +85,7 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
           );
         }
 
+        stopWatchingVideo = watchArVideoPlacement();
         setReady(true);
       })
       .catch(() => {
@@ -91,6 +94,8 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
 
     return () => {
       cancelled = true;
+      stopWatchingVideo?.();
+      document.body.classList.remove("ar-active");
       scheduleArCleanup();
       if (host) host.innerHTML = "";
     };
@@ -196,8 +201,8 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
   const viewerPhoto = photos.find((p) => p.id === viewerPhotoId) ?? null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black">
-      <div ref={sceneHostRef} className="absolute inset-0" />
+    <div className="fixed inset-0 overflow-hidden">
+      <div ref={sceneHostRef} className="absolute inset-0 z-[1]" />
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="pointer-events-auto max-w-[70%] rounded-[var(--radius)] border border-white/20 bg-black/45 px-4 py-3 backdrop-blur-md">

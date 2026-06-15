@@ -59,6 +59,25 @@ model-viewer.model-viewer--fill {
   height: 100%;
 }
 
+body.ar-active {
+  overflow: hidden !important;
+}
+
+body.ar-active > video {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+body.ar-active .a-canvas {
+  background: transparent !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   model-viewer[auto-rotate] {
     --auto-rotate-speed: 0deg;
