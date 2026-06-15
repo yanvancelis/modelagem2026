@@ -77,7 +77,23 @@ body.ar-active {
   }
 }
 
-body.ar-active > video,
+body.ar-active > video {
+  position: fixed !important;
+  top: var(--site-header-height) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: var(--ar-bottom-offset) !important;
+  width: 100% !important;
+  height: calc(100dvh - var(--site-header-height) - var(--ar-bottom-offset)) !important;
+  min-height: calc(100dvh - var(--site-header-height) - var(--ar-bottom-offset)) !important;
+  max-height: calc(100dvh - var(--site-header-height) - var(--ar-bottom-offset)) !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  margin: 0 !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
 body.ar-active > canvas {
   position: fixed !important;
   top: var(--site-header-height) !important;
@@ -85,22 +101,25 @@ body.ar-active > canvas {
   right: 0 !important;
   bottom: var(--ar-bottom-offset) !important;
   width: 100% !important;
-  height: auto !important;
-  object-fit: cover !important;
+  height: calc(100dvh - var(--site-header-height) - var(--ar-bottom-offset)) !important;
   margin: 0 !important;
   transform: none !important;
-}
-
-body.ar-active > video {
-  z-index: 1 !important;
-}
-
-body.ar-active > canvas {
   z-index: 2 !important;
   background: transparent !important;
 }
 
-body.ar-active .a-canvas {
+body.ar-active #ar-scene {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body.ar-active #ar-scene canvas.a-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   background: transparent !important;
 }
 

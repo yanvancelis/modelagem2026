@@ -119,6 +119,57 @@ type AframeScene = HTMLElement & {
 
 let activeArSession: ArSession | null = null;
 
+const AR_VIEWPORT_SELECTOR = "[data-ar-viewport]";
+
+export function getArViewportRect(): DOMRect | null {
+  const viewport = document.querySelector(AR_VIEWPORT_SELECTOR);
+  if (!viewport) return null;
+
+  const rect = viewport.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
+
+  return rect;
+}
+
+function getArMediaStyles(rect: DOMRect | null) {
+  if (rect) {
+    return {
+      position: "fixed",
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+      minHeight: `${rect.height}px`,
+      maxHeight: `${rect.height}px`,
+      margin: "0",
+      transform: "none",
+    } as const;
+  }
+
+  const headerHeight =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--site-header-height")
+      .trim() || "4.75rem";
+  const bottomOffset =
+    getComputedStyle(document.body).getPropertyValue("--ar-bottom-offset").trim() ||
+    "0px";
+  const viewportHeight = `calc(100dvh - ${headerHeight} - ${bottomOffset})`;
+
+  return {
+    position: "fixed",
+    top: headerHeight,
+    left: "0",
+    right: "0",
+    bottom: bottomOffset,
+    width: "100%",
+    height: viewportHeight,
+    minHeight: viewportHeight,
+    maxHeight: viewportHeight,
+    margin: "0",
+    transform: "none",
+  } as const;
+}
+
 export function registerActiveArSession(scene: AframeScene): void {
   const tryRegister = () => {
     const session = scene.systems?.arjs?._arSession;
@@ -136,25 +187,8 @@ export function registerActiveArSession(scene: AframeScene): void {
 export function fixArMediaPlacement(): void {
   if (typeof window === "undefined") return;
 
-  const headerHeight =
-    getComputedStyle(document.documentElement)
-      .getPropertyValue("--site-header-height")
-      .trim() || "4.75rem";
-  const bottomOffset =
-    getComputedStyle(document.body).getPropertyValue("--ar-bottom-offset").trim() ||
-    "0px";
-
-  const sharedStyles = {
-    position: "fixed",
-    top: headerHeight,
-    left: "0",
-    right: "0",
-    bottom: bottomOffset,
-    width: "100%",
-    height: "auto",
-    margin: "0",
-    transform: "none",
-  } as const;
+  const rect = getArViewportRect();
+  const sharedStyles = getArMediaStyles(rect);
 
   const video = document.body.querySelector(":scope > video");
   if (video) {
@@ -166,6 +200,7 @@ export function fixArMediaPlacement(): void {
     Object.assign((video as HTMLVideoElement).style, {
       ...sharedStyles,
       objectFit: "cover",
+      objectPosition: "center center",
       zIndex: "1",
     });
 
@@ -178,6 +213,30 @@ export function fixArMediaPlacement(): void {
       zIndex: "2",
     });
   });
+
+  const scene = document.getElementById("ar-scene") as
+    | (HTMLElement & { resize?: () => void; canvas?: HTMLCanvasElement })
+    | null;
+  if (scene) {
+    Object.assign(scene.style, {
+      position: "absolute",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+    });
+
+    const sceneCanvas = scene.canvas ?? scene.querySelector("canvas.a-canvas");
+    if (sceneCanvas) {
+      Object.assign((sceneCanvas as HTMLCanvasElement).style, {
+        position: "absolute",
+        inset: "0",
+        width: "100%",
+        height: "100%",
+      });
+    }
+
+    scene.resize?.();
+  }
 
   Object.assign(document.body.style, {
     overflow: "hidden",
@@ -198,6 +257,7 @@ export function watchArVideoPlacement(): () => void {
   if (typeof window === "undefined") return () => undefined;
 
   let videoObserver: MutationObserver | null = null;
+  let viewportObserver: ResizeObserver | null = null;
   let rafId = 0;
   let attempts = 0;
 
@@ -212,7 +272,7 @@ export function watchArVideoPlacement(): () => void {
     const video = document.body.querySelector(":scope > video") as HTMLVideoElement | null;
     if (video) attachVideoObserver(video);
     attempts += 1;
-    if (attempts < 180) rafId = requestAnimationFrame(tick);
+    if (attempts < 240) rafId = requestAnimationFrame(tick);
   };
 
   tick();
@@ -225,10 +285,23 @@ export function watchArVideoPlacement(): () => void {
 
   bodyObserver.observe(document.body, { childList: true });
 
+  const viewport = document.querySelector(AR_VIEWPORT_SELECTOR);
+  if (viewport) {
+    viewportObserver = new ResizeObserver(() => fixArMediaPlacement());
+    viewportObserver.observe(viewport);
+  }
+
+  const onViewportChange = () => fixArMediaPlacement();
+  window.addEventListener("resize", onViewportChange);
+  window.addEventListener("orientationchange", onViewportChange);
+
   return () => {
     cancelAnimationFrame(rafId);
     videoObserver?.disconnect();
     bodyObserver.disconnect();
+    viewportObserver?.disconnect();
+    window.removeEventListener("resize", onViewportChange);
+    window.removeEventListener("orientationchange", onViewportChange);
   };
 }
 

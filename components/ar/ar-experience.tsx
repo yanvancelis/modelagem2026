@@ -12,7 +12,7 @@ import {
   savePhotoToGallery,
   type GalleryPhoto,
 } from "@/lib/gallery-db";
-import { registerActiveArSession, scheduleArCleanup, loadArScripts, watchArVideoPlacement } from "@/lib/ar-scripts";
+import { getArViewportRect, registerActiveArSession, scheduleArCleanup, loadArScripts, watchArVideoPlacement } from "@/lib/ar-scripts";
 
 type ArExperienceProps = {
   slug: string;
@@ -116,8 +116,9 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
 
       requestAnimationFrame(() => {
         const output = document.createElement("canvas");
-        const viewWidth = window.innerWidth;
-        const viewHeight = window.innerHeight;
+        const viewport = getArViewportRect();
+        const viewWidth = viewport?.width ?? window.innerWidth;
+        const viewHeight = viewport?.height ?? window.innerHeight;
         const ctx = output.getContext("2d");
         if (!ctx) {
           resolve(null);
@@ -201,35 +202,27 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
   const viewerPhoto = photos.find((p) => p.id === viewerPhotoId) ?? null;
 
   return (
-    <div className="fixed inset-x-0 top-[var(--site-header-height)] bottom-12 z-[15] md:bottom-0">
+    <div
+      data-ar-viewport
+      className="fixed inset-x-0 top-[var(--site-header-height)] bottom-12 z-[15] overflow-hidden md:bottom-0"
+    >
       <div ref={sceneHostRef} className="absolute inset-0 z-[1]" />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[30] flex items-start justify-between gap-3 p-4 pt-3">
-        <div className="pointer-events-auto max-w-[70%] rounded-[var(--radius)] border border-white/20 bg-black/45 px-4 py-3 backdrop-blur-md">
-          <p className="font-display text-lg tracking-wide text-white">{title}</p>
-          <p className="mt-1 text-xs text-white/75">
-            Aponte para o{" "}
-            <a
-              href="https://github.com/AR-js-org/AR.js/blob/master/data/images/hiro.png"
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
-              marcador Hiro
-            </a>
-          </p>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[30] flex flex-col gap-3 p-4 pt-3">
+        <div className="pointer-events-auto flex w-full items-center justify-between gap-4 rounded-[var(--radius)] border border-white/20 bg-black/45 px-4 py-3 backdrop-blur-md">
+          <div className="min-w-0">
+            <p className="font-display text-lg tracking-wide text-white">{title}</p>
+            <p className="mt-1 text-xs text-white/75">
+              Aponte para o marcador para visualizar a experiência
+            </p>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hiro.png"
+            alt="Marcador Hiro"
+            className="h-14 w-14 shrink-0 rounded-sm object-contain"
+          />
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="pointer-events-auto border border-white/20 bg-black/45 text-white backdrop-blur-md"
-          onPress={() => {
-            scheduleArCleanup();
-            router.push(`/conteudo/${slug}`);
-          }}
-        >
-          Sair
-        </Button>
       </div>
 
       {!ready && !error && (
