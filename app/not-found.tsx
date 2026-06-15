@@ -9,7 +9,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-6 inline-flex items-center justify-center rounded-[var(--radius)] bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-[var(--accent-foreground)]"
+        className="font-display mt-6 inline-flex items-center justify-center rounded-[6px] bg-[var(--accent)] px-5 py-2.5 text-sm tracking-wide text-[var(--accent-foreground)]"
       >
         Voltar à exposição
       </Link>

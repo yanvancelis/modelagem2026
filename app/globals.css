@@ -4,12 +4,35 @@
 
 @theme inline {
   --font-display: var(--font-bebas);
+  --radius: 8px;
 }
 
 .font-display {
   font-family: var(--font-bebas), sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+.button {
+  font-family: var(--font-bebas), sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 6px !important;
+}
+
+.card {
+  border-radius: 8px !important;
+}
+
+:root {
+  --site-header-height: 4.75rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-header-height: 5.5rem;
+  }
 }
 
 html,
@@ -30,8 +53,40 @@ model-viewer {
   border-radius: var(--radius);
 }
 
+.model-viewer-shell--fill model-viewer,
+model-viewer.model-viewer--fill {
+  min-height: 0;
+  height: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   model-viewer[auto-rotate] {
     --auto-rotate-speed: 0deg;
+  }
+
+  .landing-gradient {
+    animation: none;
+  }
+}
+
+.landing-gradient {
+  background: linear-gradient(
+    -45deg,
+    var(--landing-a),
+    var(--landing-b),
+    var(--landing-c),
+    var(--landing-d)
+  );
+  background-size: 400% 400%;
+  animation: landing-gradient-shift 20s ease infinite;
+}
+
+@keyframes landing-gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
 }

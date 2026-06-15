@@ -102,6 +102,92 @@ function createHeartMesh(THREE: any, coordinatesList: any[], trianglesIndexes: n
   return new THREE.Mesh(geometry, material);
 }
 
+type ArSession = {
+  arSource?: { dispose?: () => void };
+  arContext?: { dispose?: () => void };
+};
+
+type AframeScene = HTMLElement & {
+  destroy?: () => void;
+  pause?: () => void;
+  systems?: {
+    arjs?: {
+      _arSession?: ArSession;
+    };
+  };
+};
+
+let activeArSession: ArSession | null = null;
+
+export function registerActiveArSession(scene: AframeScene): void {
+  const tryRegister = () => {
+    const session = scene.systems?.arjs?._arSession;
+    if (session?.arSource) {
+      activeArSession = session;
+      return;
+    }
+    requestAnimationFrame(tryRegister);
+  };
+
+  tryRegister();
+}
+
+function disposeActiveArSession(): void {
+  if (!activeArSession) return;
+
+  try {
+    activeArSession.arSource?.dispose?.();
+    activeArSession.arContext?.dispose?.();
+  } catch {
+    // ignore teardown errors from partially initialized sessions
+  }
+
+  activeArSession = null;
+}
+
+export function cleanupArResources(): void {
+  if (typeof window === "undefined") return;
+
+  disposeActiveArSession();
+
+  const scene =
+    (document.getElementById("ar-scene") ??
+      document.querySelector("a-scene")) as AframeScene | null;
+
+  if (scene) {
+    const session = scene.systems?.arjs?._arSession;
+    try {
+      session?.arSource?.dispose?.();
+      session?.arContext?.dispose?.();
+      scene.pause?.();
+      scene.destroy?.();
+    } catch {
+      // ignore teardown errors from partially initialized scenes
+    }
+    scene.remove();
+  }
+
+  document.querySelectorAll("video").forEach((video) => {
+    const stream = video.srcObject as MediaStream | null;
+    stream?.getTracks().forEach((track) => track.stop());
+    video.srcObject = null;
+    video.remove();
+  });
+
+  document.body.querySelectorAll(":scope > canvas").forEach((canvas) => {
+    canvas.remove();
+  });
+
+  document.body.removeAttribute("style");
+  document.documentElement.removeAttribute("style");
+}
+
+export function scheduleArCleanup(): void {
+  cleanupArResources();
+  requestAnimationFrame(cleanupArResources);
+  window.setTimeout(cleanupArResources, 0);
+}
+
 export function loadArScripts(): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined") {

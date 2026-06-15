@@ -23,7 +23,11 @@
   --warning-foreground: #ffffff;
   --danger: #be123c;
   --danger-foreground: #ffffff;
-  --radius: 0.75rem;
+  --radius: 8px;
+  --landing-a: #fffbfc;
+  --landing-b: #f8eef2;
+  --landing-c: #e8a8bc;
+  --landing-d: #d85a82;
 }
 
 .dark,
@@ -50,4 +54,8 @@
   --warning-foreground: #422006;
   --danger: #fb7185;
   --danger-foreground: #4c0519;
+  --landing-a: #1a1216;
+  --landing-b: #2a1f24;
+  --landing-c: #5a3040;
+  --landing-d: #ed7ba3;
 }

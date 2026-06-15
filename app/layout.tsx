@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bebas_Neue } from "next/font/google";
+import { AppShell } from "@/components/app-shell";
 import { SiteHeader } from "@/components/site-header";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -26,7 +27,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
         <Providers>
           <SiteHeader />
-          <main>{children}</main>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

@@ -12,7 +12,7 @@ import {
   savePhotoToGallery,
   type GalleryPhoto,
 } from "@/lib/gallery-db";
-import { loadArScripts } from "@/lib/ar-scripts";
+import { registerActiveArSession, scheduleArCleanup, loadArScripts } from "@/lib/ar-scripts";
 import type { ArModelId } from "@/lib/pieces";
 
 type ArExperienceProps = {
@@ -45,6 +45,7 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
 
   useEffect(() => {
     let cancelled = false;
+    const host = sceneHostRef.current;
 
     loadArScripts()
       .then(() => {
@@ -92,6 +93,17 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
           </a-scene>
         `;
 
+        const sceneEl = sceneHostRef.current.querySelector("#ar-scene") as
+          | (HTMLElement & {
+              systems?: { arjs?: { _arSession?: unknown } };
+            })
+          | null;
+        if (sceneEl) {
+          sceneEl.addEventListener("loaded", () => registerActiveArSession(sceneEl), {
+            once: true,
+          });
+        }
+
         setReady(true);
       })
       .catch(() => {
@@ -100,7 +112,8 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
 
     return () => {
       cancelled = true;
-      if (sceneHostRef.current) sceneHostRef.current.innerHTML = "";
+      scheduleArCleanup();
+      if (host) host.innerHTML = "";
     };
   }, [modelId]);
 
@@ -226,7 +239,10 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
           variant="ghost"
           size="sm"
           className="pointer-events-auto border border-white/20 bg-black/45 text-white backdrop-blur-md"
-          onPress={() => router.push(`/conteudo/${slug}`)}
+          onPress={() => {
+            scheduleArCleanup();
+            router.push(`/conteudo/${slug}`);
+          }}
         >
           Sair
         </Button>
@@ -241,14 +257,20 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
       {error && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-[var(--background)] p-6 text-center">
           <p className="text-[var(--danger)]">{error}</p>
-          <Button variant="outline" onPress={() => router.push(`/conteudo/${slug}`)}>
+          <Button
+            variant="outline"
+            onPress={() => {
+              scheduleArCleanup();
+              router.push(`/conteudo/${slug}`);
+            }}
+          >
             Voltar
           </Button>
         </div>
       )}
 
       {ready && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-center justify-between px-7 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-12 z-20 flex items-center justify-between px-7 pb-4 md:bottom-0 md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="pointer-events-auto w-[72px]" />
           <button
             type="button"
@@ -262,7 +284,7 @@ export function ArExperience({ slug, title, modelId }: ArExperienceProps) {
             type="button"
             aria-label="Abrir galeria"
             onClick={() => setGalleryOpen(true)}
-            className="pointer-events-auto flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-xl border-2 border-white bg-white/10 transition active:scale-95"
+            className="pointer-events-auto flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-[8px] border-2 border-white bg-white/10 transition active:scale-95"
           >
             {photos[0] ? (
               // eslint-disable-next-line @next/next/no-img-element

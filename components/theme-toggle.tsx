@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { MoonIcon, SunIcon } from "@/components/icons";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -12,20 +12,54 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="sm" isDisabled aria-label="Alternar tema">
-        ···
-      </Button>
+      <div
+        className="inline-flex h-9 items-center rounded-[6px] border border-[var(--border)] p-0.5"
+        aria-hidden
+      >
+        <span className="flex size-8 items-center justify-center opacity-40">
+          <SunIcon />
+        </span>
+        <span className="flex size-8 items-center justify-center opacity-40">
+          <MoonIcon />
+        </span>
+      </div>
     );
   }
 
+  const isDark = theme === "dark";
+
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      aria-label="Alternar tema claro/escuro"
-      onPress={() => setTheme(theme === "dark" ? "light" : "dark")}
+    <div
+      className="inline-flex items-center rounded-[6px] border border-[var(--border)] bg-[var(--muted)] p-0.5"
+      role="group"
+      aria-label="Selecionar tema"
     >
-      {theme === "dark" ? "Claro" : "Escuro"}
-    </Button>
+      <button
+        type="button"
+        aria-label="Tema claro"
+        aria-pressed={!isDark}
+        onClick={() => setTheme("light")}
+        className={`flex size-8 items-center justify-center rounded-[4px] transition ${
+          !isDark
+            ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+        }`}
+      >
+        <SunIcon />
+      </button>
+      <button
+        type="button"
+        aria-label="Tema escuro"
+        aria-pressed={isDark}
+        onClick={() => setTheme("dark")}
+        className={`flex size-8 items-center justify-center rounded-[4px] transition ${
+          isDark
+            ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
+            : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+        }`}
+      >
+        <MoonIcon />
+      </button>
+    </div>
   );
 }

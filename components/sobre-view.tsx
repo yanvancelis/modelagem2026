@@ -18,7 +18,7 @@ export function SobreView() {
         </p>
         <p>
           O site combina conteúdo editorial, visualização 3D com{" "}
-          <code className="rounded bg-[var(--muted)] px-1.5 py-0.5 text-sm">model-viewer</code>{" "}
+          <code className="rounded-[8px] bg-[var(--muted)] px-1.5 py-0.5 text-sm">model-viewer</code>{" "}
           e experiências AR com AR.js sobre o marcador Hiro.
         </p>
         <p>
@@ -34,7 +34,7 @@ export function SobreView() {
           .
         </p>
       </div>
-      <Button variant="outline" className="mt-8" onPress={() => router.push("/")}>
+      <Button variant="outline" className="mt-8" onPress={() => router.push("/conteudo/suzane")}>
         Ver exposição
       </Button>
     </div>
