@@ -124,7 +124,7 @@ export function registerActiveArSession(scene: AframeScene): void {
     const session = scene.systems?.arjs?._arSession;
     if (session?.arSource) {
       activeArSession = session;
-      fixArVideoPlacement();
+      fixArMediaPlacement();
       return;
     }
     requestAnimationFrame(tryRegister);
@@ -133,29 +133,65 @@ export function registerActiveArSession(scene: AframeScene): void {
   tryRegister();
 }
 
-export function fixArVideoPlacement(): void {
+export function fixArMediaPlacement(): void {
   if (typeof window === "undefined") return;
 
-  const video = document.body.querySelector(":scope > video");
-  if (!video) return;
+  const headerHeight =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--site-header-height")
+      .trim() || "4.75rem";
+  const bottomOffset =
+    getComputedStyle(document.body).getPropertyValue("--ar-bottom-offset").trim() ||
+    "0px";
 
-  video.setAttribute("playsinline", "");
-  video.setAttribute("webkit-playsinline", "");
-  video.setAttribute("autoplay", "");
-  video.setAttribute("muted", "");
-
-  Object.assign((video as HTMLVideoElement).style, {
+  const sharedStyles = {
     position: "fixed",
-    inset: "0",
+    top: headerHeight,
+    left: "0",
+    right: "0",
+    bottom: bottomOffset,
     width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    zIndex: "0",
+    height: "auto",
     margin: "0",
     transform: "none",
+  } as const;
+
+  const video = document.body.querySelector(":scope > video");
+  if (video) {
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("muted", "");
+
+    Object.assign((video as HTMLVideoElement).style, {
+      ...sharedStyles,
+      objectFit: "cover",
+      zIndex: "1",
+    });
+
+    void (video as HTMLVideoElement).play?.().catch(() => undefined);
+  }
+
+  document.body.querySelectorAll(":scope > canvas").forEach((canvas) => {
+    Object.assign((canvas as HTMLCanvasElement).style, {
+      ...sharedStyles,
+      zIndex: "2",
+    });
   });
 
-  void (video as HTMLVideoElement).play?.().catch(() => undefined);
+  Object.assign(document.body.style, {
+    overflow: "hidden",
+    width: "100%",
+    height: "100%",
+    margin: "0",
+    padding: "0",
+    transform: "none",
+  });
+}
+
+/** @deprecated use fixArMediaPlacement */
+export function fixArVideoPlacement(): void {
+  fixArMediaPlacement();
 }
 
 export function watchArVideoPlacement(): () => void {
@@ -167,12 +203,12 @@ export function watchArVideoPlacement(): () => void {
 
   const attachVideoObserver = (video: HTMLVideoElement) => {
     videoObserver?.disconnect();
-    videoObserver = new MutationObserver(() => fixArVideoPlacement());
+    videoObserver = new MutationObserver(() => fixArMediaPlacement());
     videoObserver.observe(video, { attributes: true, attributeFilter: ["style"] });
   };
 
   const tick = () => {
-    fixArVideoPlacement();
+    fixArMediaPlacement();
     const video = document.body.querySelector(":scope > video") as HTMLVideoElement | null;
     if (video) attachVideoObserver(video);
     attempts += 1;
@@ -182,7 +218,7 @@ export function watchArVideoPlacement(): () => void {
   tick();
 
   const bodyObserver = new MutationObserver(() => {
-    fixArVideoPlacement();
+    fixArMediaPlacement();
     const video = document.body.querySelector(":scope > video") as HTMLVideoElement | null;
     if (video) attachVideoObserver(video);
   });

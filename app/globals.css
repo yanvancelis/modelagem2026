@@ -61,17 +61,43 @@ model-viewer.model-viewer--fill {
 
 body.ar-active {
   overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  --ar-bottom-offset: 0px;
+}
+
+@media (max-width: 767px) {
+  body.ar-active:has(
+    nav[aria-label="Alternar entre conteúdo e realidade aumentada"]
+  ) {
+    --ar-bottom-offset: 3rem;
+  }
+}
+
+body.ar-active > video,
+body.ar-active > canvas {
+  position: fixed !important;
+  top: var(--site-header-height) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: var(--ar-bottom-offset) !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+  margin: 0 !important;
+  transform: none !important;
 }
 
 body.ar-active > video {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
-  margin: 0 !important;
-  transform: none !important;
+  z-index: 1 !important;
+}
+
+body.ar-active > canvas {
+  z-index: 2 !important;
+  background: transparent !important;
 }
 
 body.ar-active .a-canvas {

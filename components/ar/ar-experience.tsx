@@ -201,10 +201,10 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
   const viewerPhoto = photos.find((p) => p.id === viewerPhotoId) ?? null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <div className="fixed inset-x-0 top-[var(--site-header-height)] bottom-12 z-[15] md:bottom-0">
       <div ref={sceneHostRef} className="absolute inset-0 z-[1]" />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[30] flex items-start justify-between gap-3 p-4 pt-3">
         <div className="pointer-events-auto max-w-[70%] rounded-[var(--radius)] border border-white/20 bg-black/45 px-4 py-3 backdrop-blur-md">
           <p className="font-display text-lg tracking-wide text-white">{title}</p>
           <p className="mt-1 text-xs text-white/75">
@@ -233,7 +233,7 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
       </div>
 
       {!ready && !error && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--background)]/90">
+        <div className="absolute inset-0 z-[25] flex items-center justify-center bg-[var(--background)]/90">
           <p className="text-sm text-[var(--muted-foreground)]">Iniciando câmera e cena AR…</p>
         </div>
       )}
@@ -254,7 +254,7 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
       )}
 
       {ready && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-12 z-20 flex items-center justify-between px-7 pb-4 md:bottom-0 md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[30] flex items-center justify-between px-7 pb-4 md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="pointer-events-auto w-[72px]" />
           <button
             type="button"
