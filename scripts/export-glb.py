@@ -3,11 +3,13 @@ import sys
 
 output = sys.argv[-1]
 
-bpy.ops.object.select_all(action="SELECT")
+for obj in bpy.data.objects:
+    obj.select_set(obj.visible_get())
+
 bpy.ops.export_scene.gltf(
     filepath=output,
     export_format="GLB",
-    use_selection=False,
+    use_selection=True,
     export_apply=True,
     export_yup=True,
 )

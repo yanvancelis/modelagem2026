@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Início — Museu AR — Modelagem Tridimensional 2026</title>
+  <style>
+  :root {
+    color-scheme: light;
+    --bg: #fffbfc;
+    --fg: #1a1216;
+    --muted: #6b5a62;
+    --accent: #d85a82;
+    --border: #e8d4dc;
+    --surface: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.65;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
+  }
+  header a { color: inherit; text-decoration: none; }
+  header nav { margin-top: 0.75rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  header nav a { color: var(--accent); font-size: 0.95rem; }
+  main { max-width: 42rem; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+  h1, h2 { font-family: "Arial Narrow", Arial, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; line-height: 1.15; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.35rem; margin: 2rem 0 0.75rem; }
+  .subtitle { color: var(--muted); font-size: 1.05rem; margin: 0 0 1.5rem; }
+  .tagline { font-family: "Arial Narrow", Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); }
+  .gallery { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+  .gallery img { max-height: 220px; border: 1px solid var(--border); border-radius: 8px; }
+  .marker { max-width: 120px; border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 0.5rem; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .note {
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  .btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-family: "Arial Narrow", Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <a href="index.html"><strong>Museu Histórico Jacinto de Sousa</strong></a>
+    <nav><a href="index.html" aria-current="page">Início</a>
+        <a href="lampiao.html">O lampião e suas sombras</a>
+        <a href="sobre.html">Sobre</a></nav>
+  </header>
+  <main>
+    <p class="tagline">Modelagem Tridimensional · UFC Quixadá · 2026</p>
+    <h1>Sombras que assombram</h1>
+    <p class="subtitle">Uma experiência em Realidade Aumentada</p>
+    <p>Trabalho desenvolvido para a disciplina de Modelagem Tridimensional no curso de Design Digital na UFC Campus Quixadá.</p>
+    <p>Exposição digital do <strong>O lampião e suas sombras</strong>, com viewer 3D e experiência de realidade aumentada sobre marcador personalizado.</p>
+    <a class="btn" href="lampiao.html">Ver exposição</a>
+    <div class="note">
+      Este pacote HTML é uma versão estática para documentação. O site completo usa Next.js, HeroUI, model-viewer e AR.js.
+    </div>
+  </main>
+  <footer>
+    Documentação estática gerada a partir do projeto Next.js.<br>
+    Versão interativa (3D + RA): <a href="https://modelagem2026.vercel.app">https://modelagem2026.vercel.app</a>
+  </footer>
+</body>
+</html>

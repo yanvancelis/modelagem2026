@@ -54,8 +54,8 @@ export const pieces: Piece[] = [
       poster: "/assets/fachada-museu.png",
     },
     ar: {
-      scale: [0.03, 0.03, 0.03],
-      position: [0.43, 0.13, 0],
+      scale: [0.117, 0.117, 0.117],
+      position: [0, 0, 0],
       rotation: [0, 0, 0],
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",

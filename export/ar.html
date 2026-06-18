@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AR — O lampião e suas sombras — Museu AR</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="has-mobile-nav">
+  <div class="file-protocol-warning">
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use um servidor local:
+    <code>npm run export:serve</code> e acesse <code>http://localhost:3004</code>
+  </div>
+  <header class="site-header">
+  <div class="site-header__inner">
+    <a href="index.html"><img class="site-header__logo" src="/logos/museu-historico-jacinto-de-sousa.png" alt="Museu Histórico Jacinto de Sousa"></a>
+    <nav><a href="index.html">Início</a><a href="lampiao.html" class="is-active">Exposição</a><a href="sobre.html">Sobre</a></nav>
+  </div>
+</header>
+  <div class="ar-viewport" data-ar-viewport>
+  <div id="ar-scene-host" style="position:absolute;inset:0;z-index:1"></div>
+  <div class="ar-overlay">
+    <div class="ar-card">
+      <div>
+        <p class="ar-card__title">O lampião e suas sombras</p>
+        <p class="ar-card__hint" id="ar-status-hint">Aponte para o marcador impresso para visualizar a experiência</p>
+        <a href="/markers/lampiao-marcador.pdf" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.9);text-decoration:underline">Baixar marcador para impressão</a>
+      </div>
+      <img class="ar-card__marker" src="/markers/lampiao-marker.png" alt="Marcador da exposição">
+    </div>
+  </div>
+  <div id="ar-loading" class="ar-loading">Iniciando câmera e cena AR…</div>
+  <div id="ar-controls" class="ar-controls is-hidden">
+    <div style="width:3.25rem"></div>
+    <button id="ar-shutter" type="button" class="ar-shutter" aria-label="Capturar foto"><span></span></button>
+    <button id="ar-gallery-btn" type="button" class="ar-gallery-btn" aria-label="Abrir galeria">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <path d="M21 15l-5-5L5 21"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+<div id="ar-photo-modal" class="ar-modal">
+  <div class="ar-modal__bar">
+    <button id="ar-photo-close" type="button">Fechar</button>
+  </div>
+  <img id="ar-photo-modal-img" alt="Foto AR">
+</div>
+<script>
+  window.__AR_CONFIG__ = {"modelSrc":"/models/lampiao.glb","markerPattern":"/markers/lampiao.patt","markerImage":"/markers/lampiao-marker.png","markerSize":1,"scale":[0.117,0.117,0.117],"position":[0,0,0],"rotation":[0,0,0],"title":"O lampião e suas sombras"};
+</script>
+<script src="js/ar-runtime.js"></script>
+<script>
+  StaticAr.initArPage(window.__AR_CONFIG__);
+</script>
+  <nav class="mobile-nav" aria-label="Alternar entre conteúdo e realidade aumentada">
+  <a href="lampiao.html">Conteúdo</a>
+  <a href="ar.html" class="is-active" data-leave-ar="true">Experiência RA</a>
+</nav>
+</body>
+</html>

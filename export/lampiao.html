@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O lampião e suas sombras — Museu AR</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="has-mobile-nav">
+  <div class="file-protocol-warning">
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use um servidor local:
+    <code>npm run export:serve</code> e acesse <code>http://localhost:3004</code>
+  </div>
+  <header class="site-header">
+  <div class="site-header__inner">
+    <a href="index.html"><img class="site-header__logo" src="/logos/museu-historico-jacinto-de-sousa.png" alt="Museu Histórico Jacinto de Sousa"></a>
+    <nav><a href="index.html">Início</a><a href="lampiao.html" class="is-active">Exposição</a><a href="sobre.html">Sobre</a></nav>
+  </div>
+</header>
+  <main class="content content-grid">
+  <section>
+    <p class="tagline">Acervo digital</p>
+    <h1 class="font-display">O lampião e suas sombras</h1>
+    <p class="subtitle">Museu Jacinto de Sousa, Quixadá</p>
+    <p>No Museu Jacinto de Sousa, em Quixadá, os objetos guardam mais do que história. Guardam memória viva, causos passados de geração em geração e, dizem alguns, presenças que nunca foram embora.</p>
+        <p>O lampião que você vê aqui é um desses objetos. Por anos iluminou casas do sertão cearense, projetando luz onde havia escuridão. Mas quem trabalha no museu sabe: quando o dia fecha e o silêncio toma conta das salas, as sombras que ele deixa nas paredes parecem se mover sozinhas.</p>
+        <p>Funcionários e visitantes relatam presenças inexplicadas, sons sem origem e formas que surgem e desaparecem. Ninguém sabe ao certo o que são. Mas todos concordam que estão lá.</p>
+    <h2 class="font-display" style="margin-top:2.5rem;font-size:1.75rem">Veja por você mesmo</h2><p>Este projeto usa Realidade Aumentada para dar forma a essas histórias. Aponte a câmera do seu celular para o marcador e descubra o que as sombras escondem.</p>
+    <div style="margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap">
+      <a class="btn btn--primary" href="ar.html">Realidade aumentada</a>
+      <a class="btn btn--outline" href="index.html">Voltar ao início</a>
+    </div>
+    <h2 class="font-display" style="margin-top:2.5rem;font-size:1.75rem">Galeria</h2>
+    <div class="gallery"><img src="/images/lampiao/lampiao-museu.jpg" alt="Galeria — O lampião e suas sombras">
+          <img src="/assets/fachada-museu.png" alt="Galeria — O lampião e suas sombras"></div>
+  </section>
+  <section>
+    <div class="model-shell">
+      <model-viewer
+        src="/models/lampiao.glb"
+        poster="/assets/fachada-museu.png"
+        alt="O lampião e suas sombras"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        shadow-intensity="1"
+        ar
+        ar-modes="webxr scene-viewer quick-look">
+      </model-viewer>
+    </div>
+  </section>
+</main>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <nav class="mobile-nav" aria-label="Alternar entre conteúdo e realidade aumentada">
+  <a href="lampiao.html" class="is-active">Conteúdo</a>
+  <a href="ar.html" data-leave-ar="true">Experiência RA</a>
+</nav>
+</body>
+</html>

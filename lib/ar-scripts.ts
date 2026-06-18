@@ -1,5 +1,89 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+export function resolvePublicUrl(path: string): string {
+  if (!path || /^https?:\/\//i.test(path)) return path;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return new URL(normalized, window.location.origin).href;
+}
+
+export type ArSceneConfig = {
+  modelSrc: string;
+  markerPattern: string;
+  markerSize?: number;
+  scale?: [number, number, number];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+};
+
+export async function verifyPatternMarker(patternPath: string): Promise<boolean> {
+  try {
+    const response = await fetch(resolvePublicUrl(patternPath));
+    if (!response.ok) return false;
+    const text = await response.text();
+    return text.trim().length > 0 && text.includes("255");
+  } catch {
+    return false;
+  }
+}
+
+export function mountArScene(
+  host: HTMLElement,
+  config: ArSceneConfig,
+  callbacks?: {
+    onMarkerFound?: () => void;
+    onMarkerLost?: () => void;
+    onSceneLoaded?: (scene: HTMLElement) => void;
+  },
+): HTMLElement {
+  host.replaceChildren();
+
+  const scene = document.createElement("a-scene");
+  scene.id = "ar-scene";
+  scene.setAttribute("embedded", "");
+  scene.setAttribute("vr-mode-ui", "enabled: false");
+  scene.setAttribute(
+    "renderer",
+    "alpha: true; antialias: true; precision: medium; preserveDrawingBuffer: true; logarithmicDepthBuffer: true;",
+  );
+  scene.setAttribute("arjs", "sourceType: webcam; debugUIEnabled: false; detectionMode: mono;");
+  scene.style.cssText = "position:absolute;inset:0;z-index:1;";
+
+  const marker = document.createElement("a-marker");
+  marker.id = "ar-marker";
+  marker.setAttribute("type", "pattern");
+  marker.setAttribute("url", resolvePublicUrl(config.markerPattern));
+  marker.setAttribute("size", String(config.markerSize ?? 1));
+  marker.setAttribute("min-confidence", "0.45");
+  marker.setAttribute("smooth", "true");
+
+  const [sx, sy, sz] = config.scale ?? [1, 1, 1];
+  const [px, py, pz] = config.position ?? [0, 0, 0];
+  const [rx, ry, rz] = config.rotation ?? [0, 0, 0];
+
+  const model = document.createElement("a-entity");
+  model.id = "ar-model-entity";
+  model.setAttribute("gltf-model", resolvePublicUrl(config.modelSrc));
+  model.setAttribute("position", `${px} ${py} ${pz}`);
+  model.setAttribute("rotation", `${rx} ${ry} ${rz}`);
+  model.setAttribute("scale", `${sx} ${sy} ${sz}`);
+
+  const camera = document.createElement("a-entity");
+  camera.setAttribute("camera", "");
+
+  marker.appendChild(model);
+  scene.appendChild(marker);
+  scene.appendChild(camera);
+  host.appendChild(scene);
+
+  if (callbacks?.onMarkerFound) marker.addEventListener("markerFound", callbacks.onMarkerFound);
+  if (callbacks?.onMarkerLost) marker.addEventListener("markerLost", callbacks.onMarkerLost);
+  if (callbacks?.onSceneLoaded) {
+    scene.addEventListener("loaded", () => callbacks.onSceneLoaded!(scene), { once: true });
+  }
+
+  return scene;
+}
+
 type AframeGlobal = {
   AFRAME?: {
     THREE: any;

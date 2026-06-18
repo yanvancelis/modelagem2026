@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docs:html": "npx tsx scripts/generate-docs-html.ts",
+    "export:static": "npx tsx scripts/generate-static-export.ts",
+    "export:serve": "npx serve export -p 3004"
   },
   "dependencies": {
     "@google/model-viewer": "^4.1.0",

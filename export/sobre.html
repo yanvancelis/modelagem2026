@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sobre — Museu AR</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="">
+  <div class="file-protocol-warning">
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use um servidor local:
+    <code>npm run export:serve</code> e acesse <code>http://localhost:3004</code>
+  </div>
+  <header class="site-header">
+  <div class="site-header__inner">
+    <a href="index.html"><img class="site-header__logo" src="/logos/museu-historico-jacinto-de-sousa.png" alt="Museu Histórico Jacinto de Sousa"></a>
+    <nav><a href="index.html">Início</a><a href="lampiao.html">Exposição</a><a href="sobre.html" class="is-active">Sobre</a></nav>
+  </div>
+</header>
+  <main class="content">
+  <h1 class="font-display">Sobre</h1>
+  <p>Projeto de modelagem tridimensional e realidade aumentada desenvolvido para a exposição de 2026. A identidade visual é inspirada na fachada rosa do museu — pilastras brancas, molduras ornamentais e iluminação magenta.</p>
+  <p>O site combina conteúdo editorial, visualização 3D com <code>model-viewer</code> e experiências AR com AR.js sobre marcadores personalizados.</p>
+  <p>Marcadores customizados podem ser gerados no <a href="https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/examples/generator.html" target="_blank" rel="noreferrer">treinador oficial do AR.js</a>.</p>
+  <a class="btn btn--outline" href="lampiao.html" style="margin-top:1.5rem">Ver exposição</a>
+</main>
+  
+</body>
+</html>

@@ -12,7 +12,15 @@ import {
   savePhotoToGallery,
   type GalleryPhoto,
 } from "@/lib/gallery-db";
-import { getArViewportRect, registerActiveArSession, scheduleArCleanup, loadArScripts, watchArVideoPlacement } from "@/lib/ar-scripts";
+import {
+  getArViewportRect,
+  mountArScene,
+  registerActiveArSession,
+  scheduleArCleanup,
+  loadArScripts,
+  verifyPatternMarker,
+  watchArVideoPlacement,
+} from "@/lib/ar-scripts";
 
 import type { Piece } from "@/lib/pieces";
 
@@ -31,6 +39,7 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
   const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [viewerPhotoId, setViewerPhotoId] = useState<number | null>(null);
+  const [markerStatus, setMarkerStatus] = useState<"searching" | "found">("searching");
 
   const refreshPhotos = useCallback(async () => {
     try {
@@ -52,48 +61,33 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
     document.body.classList.add("ar-active");
 
     loadArScripts()
-      .then(() => {
+      .then(async () => {
         if (cancelled || !sceneHostRef.current) return;
 
-        const [sx, sy, sz] = ar?.scale ?? [1, 1, 1];
-        const [px, py, pz] = ar?.position ?? [0, 0, 0];
-        const [rx, ry, rz] = ar?.rotation ?? [0, 0, 0];
         const markerPattern = ar?.markerPattern ?? "/markers/lampiao.patt";
-        const markerSize = ar?.markerSize ?? 1;
-
-        sceneHostRef.current.innerHTML = `
-          <a-scene
-            id="ar-scene"
-            embedded
-            vr-mode-ui="enabled: false"
-            renderer="alpha: true; antialias: true; precision: medium; preserveDrawingBuffer: true; logarithmicDepthBuffer: true;"
-            arjs="sourceType: webcam; debugUIEnabled: false;"
-            style="position:absolute;inset:0;z-index:1;"
-          >
-            <a-assets timeout="120000">
-              <a-asset-item id="ar-model" src="${modelSrc}"></a-asset-item>
-            </a-assets>
-            <a-marker type="pattern" url="${markerPattern}" size="${markerSize}">
-              <a-entity
-                id="ar-model-entity"
-                gltf-model="#ar-model"
-                position="${px} ${py} ${pz}"
-                rotation="${rx} ${ry} ${rz}"
-                scale="${sx} ${sy} ${sz}">
-              </a-entity>
-            </a-marker>
-            <a-entity camera></a-entity>
-          </a-scene>
-        `;
-
-        const sceneEl = sceneHostRef.current.querySelector("#ar-scene");
-        if (sceneEl) {
-          sceneEl.addEventListener(
-            "loaded",
-            () => registerActiveArSession(sceneEl as Parameters<typeof registerActiveArSession>[0]),
-            { once: true },
-          );
+        const patternOk = await verifyPatternMarker(markerPattern);
+        if (!patternOk) {
+          if (!cancelled) setError("Não foi possível carregar o arquivo do marcador (.patt).");
+          return;
         }
+
+        mountArScene(
+          sceneHostRef.current,
+          {
+            modelSrc,
+            markerPattern,
+            markerSize: ar?.markerSize,
+            scale: ar?.scale,
+            position: ar?.position,
+            rotation: ar?.rotation,
+          },
+          {
+            onMarkerFound: () => setMarkerStatus("found"),
+            onMarkerLost: () => setMarkerStatus("searching"),
+            onSceneLoaded: (sceneEl) =>
+              registerActiveArSession(sceneEl as Parameters<typeof registerActiveArSession>[0]),
+          },
+        );
 
         stopWatchingVideo = watchArVideoPlacement();
         setReady(true);
@@ -223,8 +217,18 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
           <div className="min-w-0">
             <p className="font-display text-lg tracking-wide text-white">{title}</p>
             <p className="mt-1 text-xs text-white/75">
-              Aponte para o marcador para visualizar a experiência
+              {markerStatus === "found"
+                ? "Marcador detectado — ajuste a distância se o modelo não aparecer"
+                : "Aponte para o marcador impresso para visualizar a experiência"}
             </p>
+            <a
+              href="/markers/lampiao-marcador.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-block text-xs text-white/90 underline"
+            >
+              Baixar marcador para impressão
+            </a>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
