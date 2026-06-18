@@ -319,7 +319,11 @@ export function fixArMediaPlacement(): void {
       });
     }
 
-    scene.resize?.();
+    try {
+      scene.resize?.();
+    } catch {
+      // Scene may not be fully initialized yet (renderer/xr unavailable).
+    }
   }
 
   Object.assign(document.body.style, {
@@ -453,6 +457,50 @@ function isArReady(): boolean {
   return Boolean(w.AFRAME?.components?.["arjs-anchor"]);
 }
 
+function isAframeReady(): boolean {
+  if (typeof window === "undefined") return false;
+  return Boolean((window as Window & AframeGlobal).AFRAME);
+}
+
+function waitForLibrary(isLoaded: () => boolean, timeoutMs = 20000): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const start = performance.now();
+    const check = () => {
+      if (isLoaded()) {
+        resolve();
+        return;
+      }
+      if (performance.now() - start > timeoutMs) {
+        reject(new Error("Timeout waiting for AR library"));
+        return;
+      }
+      requestAnimationFrame(check);
+    };
+    check();
+  });
+}
+
+function loadScript(src: string, isLoaded: () => boolean): Promise<void> {
+  if (isLoaded()) return Promise.resolve();
+
+  const ensureScript = (): Promise<void> =>
+    new Promise((res, rej) => {
+      if (document.querySelector(`script[src="${src}"]`)) {
+        res();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = false;
+      script.onload = () => res();
+      script.onerror = () => rej(new Error(`Failed to load ${src}`));
+      document.head.appendChild(script);
+    });
+
+  return ensureScript().then(() => waitForLibrary(isLoaded));
+}
+
 export function loadArScripts(): Promise<void> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("AR scripts require browser"));
@@ -468,34 +516,16 @@ export function loadArScripts(): Promise<void> {
   arScriptsPromise = new Promise((resolve, reject) => {
     const w = window as Window & AframeGlobal;
 
-    const loadScript = (src: string) =>
-      new Promise<void>((res, rej) => {
-        if (document.querySelector(`script[src="${src}"]`)) {
-          res();
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = src;
-        script.async = true;
-        script.onload = () => res();
-        script.onerror = () => rej(new Error(`Failed to load ${src}`));
-        document.head.appendChild(script);
-      });
-
     const aframeSrc = "https://aframe.io/releases/1.3.0/aframe.min.js";
     const arJsSrc =
       "https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js";
 
     const loadArJs = () =>
-      loadScript(arJsSrc).then(() => {
-        if (!isArReady()) {
-          throw new Error("AR.js loaded but arjs-anchor component is missing");
-        }
+      loadScript(arJsSrc, isArReady).then(() => {
         registerHeartMeshComponent();
       });
 
-    const boot = w.AFRAME ? loadArJs() : loadScript(aframeSrc).then(loadArJs);
+    const boot = w.AFRAME ? loadArJs() : loadScript(aframeSrc, isAframeReady).then(loadArJs);
 
     boot
       .then(() => resolve())

@@ -15,19 +15,54 @@
     return Boolean(window.AFRAME?.components?.["arjs-anchor"]);
   }
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      if (document.querySelector('script[src="' + src + '"]')) {
-        resolve();
-        return;
-      }
+  function isAframeReady() {
+    return Boolean(window.AFRAME);
+  }
 
-      const script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error("Failed to load " + src));
-      document.head.appendChild(script);
+  function waitForLibrary(isLoaded, timeoutMs) {
+    timeoutMs = timeoutMs || 20000;
+    return new Promise(function (resolve, reject) {
+      var start = performance.now();
+      function check() {
+        if (isLoaded()) {
+          resolve();
+          return;
+        }
+        if (performance.now() - start > timeoutMs) {
+          reject(new Error("Timeout waiting for AR library"));
+          return;
+        }
+        requestAnimationFrame(check);
+      }
+      check();
+    });
+  }
+
+  function loadScript(src, isLoaded) {
+    if (isLoaded()) return Promise.resolve();
+
+    function ensureScript() {
+      return new Promise(function (resolve, reject) {
+        if (document.querySelector('script[src="' + src + '"]')) {
+          resolve();
+          return;
+        }
+
+        var script = document.createElement("script");
+        script.src = src;
+        script.async = false;
+        script.onload = function () {
+          resolve();
+        };
+        script.onerror = function () {
+          reject(new Error("Failed to load " + src));
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    return ensureScript().then(function () {
+      return waitForLibrary(isLoaded);
     });
   }
 
@@ -35,23 +70,21 @@
     if (isArReady()) return Promise.resolve();
     if (arScriptsPromise) return arScriptsPromise;
 
-    const aframeSrc = "https://aframe.io/releases/1.3.0/aframe.min.js";
-    const arJsSrc =
+    var aframeSrc = "https://aframe.io/releases/1.3.0/aframe.min.js";
+    var arJsSrc =
       "https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js";
 
-    const loadArJs = () =>
-      loadScript(arJsSrc).then(() => {
-        if (!isArReady()) {
-          throw new Error("AR.js loaded but arjs-anchor component is missing");
-        }
-      });
+    var loadArJs = function () {
+      return loadScript(arJsSrc, isArReady);
+    };
 
-    arScriptsPromise = (window.AFRAME ? loadArJs() : loadScript(aframeSrc).then(loadArJs)).catch(
-      (error) => {
-        arScriptsPromise = null;
-        throw error;
-      },
-    );
+    arScriptsPromise = (window.AFRAME
+      ? loadArJs()
+      : loadScript(aframeSrc, isAframeReady).then(loadArJs)
+    ).catch(function (error) {
+      arScriptsPromise = null;
+      throw error;
+    });
 
     return arScriptsPromise;
   }
@@ -140,7 +173,11 @@
           height: "100%",
         });
       }
-      scene.resize?.();
+      try {
+        scene.resize?.();
+      } catch (_error) {
+        // Scene may not be fully initialized yet.
+      }
     }
 
     Object.assign(document.body.style, {

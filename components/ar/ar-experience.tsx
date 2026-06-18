@@ -58,6 +58,9 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
     let cancelled = false;
     let stopWatchingVideo: (() => void) | undefined;
     const host = sceneHostRef.current;
+    setError(null);
+    setReady(false);
+    setMarkerStatus("searching");
     document.body.classList.add("ar-active");
 
     loadArScripts()
@@ -89,12 +92,21 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
           },
         );
 
-        stopWatchingVideo = watchArVideoPlacement();
-        setReady(true);
+        try {
+          stopWatchingVideo = watchArVideoPlacement();
+          setReady(true);
+        } catch (cause) {
+          console.error("AR placement failed:", cause);
+          if (!cancelled) setError("Não foi possível iniciar a câmera AR.");
+        }
       })
       .catch((cause) => {
         console.error("AR init failed:", cause);
-        if (!cancelled) setError("Não foi possível carregar a experiência AR.");
+        if (!cancelled) {
+          const detail =
+            cause instanceof Error && cause.message ? ` (${cause.message})` : "";
+          setError(`Não foi possível carregar a experiência AR.${detail}`);
+        }
       });
 
     return () => {
