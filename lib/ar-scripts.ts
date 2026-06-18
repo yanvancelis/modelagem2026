@@ -445,22 +445,36 @@ export function scheduleArCleanup(): void {
   window.setTimeout(cleanupArResources, 0);
 }
 
-export function loadArScripts(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (typeof window === "undefined") {
-      reject(new Error("AR scripts require browser"));
-      return;
-    }
+let arScriptsPromise: Promise<void> | null = null;
 
+function isArReady(): boolean {
+  if (typeof window === "undefined") return false;
+  const w = window as Window & AframeGlobal;
+  return Boolean(w.AFRAME?.components?.["arjs-anchor"]);
+}
+
+export function loadArScripts(): Promise<void> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("AR scripts require browser"));
+  }
+
+  if (isArReady()) {
+    registerHeartMeshComponent();
+    return Promise.resolve();
+  }
+
+  if (arScriptsPromise) return arScriptsPromise;
+
+  arScriptsPromise = new Promise((resolve, reject) => {
     const w = window as Window & AframeGlobal;
-    if (w.AFRAME) {
-      registerHeartMeshComponent();
-      resolve();
-      return;
-    }
 
     const loadScript = (src: string) =>
       new Promise<void>((res, rej) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+          res();
+          return;
+        }
+
         const script = document.createElement("script");
         script.src = src;
         script.async = true;
@@ -469,16 +483,27 @@ export function loadArScripts(): Promise<void> {
         document.head.appendChild(script);
       });
 
-    loadScript("https://aframe.io/releases/1.3.0/aframe.min.js")
-      .then(() =>
-        loadScript(
-          "https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js",
-        ),
-      )
-      .then(() => {
+    const aframeSrc = "https://aframe.io/releases/1.3.0/aframe.min.js";
+    const arJsSrc =
+      "https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.7/aframe/build/aframe-ar.js";
+
+    const loadArJs = () =>
+      loadScript(arJsSrc).then(() => {
+        if (!isArReady()) {
+          throw new Error("AR.js loaded but arjs-anchor component is missing");
+        }
         registerHeartMeshComponent();
-        resolve();
-      })
-      .catch(reject);
+      });
+
+    const boot = w.AFRAME ? loadArJs() : loadScript(aframeSrc).then(loadArJs);
+
+    boot
+      .then(() => resolve())
+      .catch((error) => {
+        arScriptsPromise = null;
+        reject(error);
+      });
   });
+
+  return arScriptsPromise;
 }

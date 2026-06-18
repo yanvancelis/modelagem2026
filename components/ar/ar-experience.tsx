@@ -92,7 +92,8 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
         stopWatchingVideo = watchArVideoPlacement();
         setReady(true);
       })
-      .catch(() => {
+      .catch((cause) => {
+        console.error("AR init failed:", cause);
         if (!cancelled) setError("Não foi possível carregar a experiência AR.");
       });
 
@@ -101,7 +102,7 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
       stopWatchingVideo?.();
       document.body.classList.remove("ar-active");
       scheduleArCleanup();
-      if (host) host.innerHTML = "";
+      if (host) host.replaceChildren();
     };
   }, [ar, modelSrc]);
 
