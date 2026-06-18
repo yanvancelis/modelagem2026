@@ -1,4 +1,4 @@
-export type ArModelId = "suzane";
+export type ArModelId = "lampiao";
 
 export type Piece = {
   slug: string;
@@ -6,6 +6,10 @@ export type Piece = {
   subtitle: string;
   excerpt: string;
   body: string[];
+  closing?: {
+    heading: string;
+    text: string;
+  };
   cover: string;
   gallery: string[];
   arModelId: ArModelId;
@@ -13,25 +17,49 @@ export type Piece = {
     src: string;
     poster?: string;
   };
+  ar?: {
+    scale: [number, number, number];
+    position: [number, number, number];
+    rotation?: [number, number, number];
+    markerPattern: string;
+    markerImage: string;
+    markerSize?: number;
+  };
 };
 
 export const pieces: Piece[] = [
   {
-    slug: "suzane",
-    title: "Suzane",
-    subtitle: "Modelo 3D exportado do Blender",
+    slug: "lampiao",
+    title: "O lampião e suas sombras",
+    subtitle: "Museu Jacinto de Sousa, Quixadá",
     excerpt:
-      "Peça tridimensional em GLB, explorável no viewer web e visível em realidade aumentada sobre o marcador Hiro.",
+      "Um objeto do sertão cearense cujas sombras, dizem, ainda se movem quando o museu fecha.",
     body: [
-      "Suzane é a peça principal do acervo digital desta exposição. O modelo foi modelado no Blender e exportado em glTF binário (.glb) para uso tanto no navegador quanto na experiência AR.",
-      "Na visualização web, você pode rotacionar, dar zoom e inspecionar os detalhes da superfície. Na rota de realidade aumentada, aponte a câmera para o marcador Hiro e veja a peça sobreposta ao ambiente.",
+      "No Museu Jacinto de Sousa, em Quixadá, os objetos guardam mais do que história. Guardam memória viva, causos passados de geração em geração e, dizem alguns, presenças que nunca foram embora.",
+      "O lampião que você vê aqui é um desses objetos. Por anos iluminou casas do sertão cearense, projetando luz onde havia escuridão. Mas quem trabalha no museu sabe: quando o dia fecha e o silêncio toma conta das salas, as sombras que ele deixa nas paredes parecem se mover sozinhas.",
+      "Funcionários e visitantes relatam presenças inexplicadas, sons sem origem e formas que surgem e desaparecem. Ninguém sabe ao certo o que são. Mas todos concordam que estão lá.",
     ],
+    closing: {
+      heading: "Veja por você mesmo",
+      text: "Este projeto usa Realidade Aumentada para dar forma a essas histórias. Aponte a câmera do seu celular para o marcador e descubra o que as sombras escondem.",
+    },
     cover: "/assets/fachada-museu.png",
-    gallery: ["/assets/fachada-museu.png"],
-    arModelId: "suzane",
+    gallery: [
+      "/images/lampiao/lampiao-museu.jpg",
+      "/assets/fachada-museu.png",
+    ],
+    arModelId: "lampiao",
     model: {
-      src: "/models/suzane.glb",
+      src: "/models/lampiao.glb",
       poster: "/assets/fachada-museu.png",
+    },
+    ar: {
+      scale: [0.03, 0.03, 0.03],
+      position: [0.43, 0.13, 0],
+      rotation: [0, 0, 0],
+      markerPattern: "/markers/lampiao.patt",
+      markerImage: "/markers/lampiao-marker.png",
+      markerSize: 1,
     },
   },
 ];

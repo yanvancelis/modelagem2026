@@ -14,7 +14,14 @@ export default async function ArPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ArExperience slug={piece.slug} title={piece.title} />;
+  return (
+    <ArExperience
+      slug={piece.slug}
+      title={piece.title}
+      modelSrc={piece.model?.src ?? ""}
+      ar={piece.ar}
+    />
+  );
 }
 
 export async function generateMetadata({ params }: PageProps) {

@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { MuseumLogo, museumLogo } from "@/components/museum-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { pieces } from "@/lib/pieces";
+
+const mainPieceSlug = pieces[0]?.slug ?? "lampiao";
 
 export function HomeLanding() {
   const router = useRouter();
@@ -36,7 +39,7 @@ export function HomeLanding() {
             variant="primary"
             size="lg"
             className="mt-10 min-w-[200px]"
-            onPress={() => router.push("/conteudo/suzane")}
+            onPress={() => router.push(`/conteudo/${mainPieceSlug}`)}
           >
             Entrar agora
           </Button>

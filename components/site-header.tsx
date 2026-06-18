@@ -4,9 +4,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button, Drawer, useOverlayState } from "@heroui/react";
 import { MuseumLogo, museumLogo } from "@/components/museum-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { pieces } from "@/lib/pieces";
+
+const mainPieceSlug = pieces[0]?.slug ?? "lampiao";
 
 const navItems = [
-  { label: "Exposição", href: "/conteudo/suzane" },
+  { label: "Exposição", href: `/conteudo/${mainPieceSlug}` },
   { label: "Sobre", href: "/sobre" },
 ] as const;
 
@@ -27,8 +30,8 @@ function MenuIcon() {
 }
 
 function isNavActive(href: string, pathname: string) {
-  if (href === "/conteudo/suzane") {
-    return pathname.startsWith("/conteudo/suzane");
+  if (href.startsWith("/conteudo/")) {
+    return pathname.startsWith(href);
   }
   return pathname === href;
 }

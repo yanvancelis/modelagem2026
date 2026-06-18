@@ -2,6 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
+import { pieces } from "@/lib/pieces";
+
+const mainPieceSlug = pieces[0]?.slug ?? "lampiao";
 
 export function SobreView() {
   const router = useRouter();
@@ -19,7 +22,7 @@ export function SobreView() {
         <p>
           O site combina conteúdo editorial, visualização 3D com{" "}
           <code className="rounded-[8px] bg-[var(--muted)] px-1.5 py-0.5 text-sm">model-viewer</code>{" "}
-          e experiências AR com AR.js sobre o marcador Hiro.
+          e experiências AR com AR.js sobre marcadores personalizados.
         </p>
         <p>
           Marcadores customizados podem ser gerados no{" "}
@@ -34,7 +37,7 @@ export function SobreView() {
           .
         </p>
       </div>
-      <Button variant="outline" className="mt-8" onPress={() => router.push("/conteudo/suzane")}>
+      <Button variant="outline" className="mt-8" onPress={() => router.push(`/conteudo/${mainPieceSlug}`)}>
         Ver exposição
       </Button>
     </div>

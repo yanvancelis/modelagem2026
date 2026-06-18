@@ -14,12 +14,16 @@ import {
 } from "@/lib/gallery-db";
 import { getArViewportRect, registerActiveArSession, scheduleArCleanup, loadArScripts, watchArVideoPlacement } from "@/lib/ar-scripts";
 
+import type { Piece } from "@/lib/pieces";
+
 type ArExperienceProps = {
   slug: string;
   title: string;
+  modelSrc: string;
+  ar?: Piece["ar"];
 };
 
-export function ArExperience({ slug, title }: ArExperienceProps) {
+export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
   const router = useRouter();
   const sceneHostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -51,6 +55,12 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
       .then(() => {
         if (cancelled || !sceneHostRef.current) return;
 
+        const [sx, sy, sz] = ar?.scale ?? [1, 1, 1];
+        const [px, py, pz] = ar?.position ?? [0, 0, 0];
+        const [rx, ry, rz] = ar?.rotation ?? [0, 0, 0];
+        const markerPattern = ar?.markerPattern ?? "/markers/lampiao.patt";
+        const markerSize = ar?.markerSize ?? 1;
+
         sceneHostRef.current.innerHTML = `
           <a-scene
             id="ar-scene"
@@ -61,15 +71,15 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
             style="position:absolute;inset:0;z-index:1;"
           >
             <a-assets timeout="120000">
-              <a-asset-item id="suzane" src="/models/suzane.glb"></a-asset-item>
+              <a-asset-item id="ar-model" src="${modelSrc}"></a-asset-item>
             </a-assets>
-            <a-marker preset="hiro" size="1">
+            <a-marker type="pattern" url="${markerPattern}" size="${markerSize}">
               <a-entity
-                id="model-suzane"
-                gltf-model="#suzane"
-                position="0 1.48 0"
-                rotation="0 0 0"
-                scale="1.5 1.5 1.5">
+                id="ar-model-entity"
+                gltf-model="#ar-model"
+                position="${px} ${py} ${pz}"
+                rotation="${rx} ${ry} ${rz}"
+                scale="${sx} ${sy} ${sz}">
               </a-entity>
             </a-marker>
             <a-entity camera></a-entity>
@@ -99,7 +109,7 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
       scheduleArCleanup();
       if (host) host.innerHTML = "";
     };
-  }, []);
+  }, [ar, modelSrc]);
 
   const composePhoto = useCallback((): Promise<string | null> => {
     return new Promise((resolve) => {
@@ -218,9 +228,9 @@ export function ArExperience({ slug, title }: ArExperienceProps) {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/hiro.png"
-            alt="Marcador Hiro"
-            className="h-14 w-14 shrink-0 rounded-sm object-contain"
+            src={ar?.markerImage ?? "/markers/lampiao-marker.png"}
+            alt="Marcador da exposição"
+            className="h-14 w-14 shrink-0 rounded-sm border border-white/20 bg-white object-contain p-1"
           />
         </div>
       </div>

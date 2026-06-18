@@ -28,6 +28,17 @@ function PieceText({ piece }: { piece: Piece }) {
           <p key={paragraph.slice(0, 24)}>{paragraph}</p>
         ))}
       </div>
+
+      {piece.closing && (
+        <div className="mt-10 space-y-3">
+          <h2 className="font-display text-2xl tracking-wide text-[var(--foreground)] md:text-3xl">
+            {piece.closing.heading}
+          </h2>
+          <p className="text-base leading-relaxed text-[var(--foreground)] md:text-lg">
+            {piece.closing.text}
+          </p>
+        </div>
+      )}
     </>
   );
 }
