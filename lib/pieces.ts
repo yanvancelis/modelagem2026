@@ -39,10 +39,13 @@ export type Piece = {
 const AR_LAMP_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
 /** Fantasmas em pé, de frente para a câmera. */
 const AR_GHOST_ROTATION: [number, number, number] = [0, 0, 0];
-/** Metros — fantasmas ao fundo (+Z afasta do observador na leitura frontal). */
-const AR_GHOST_DEPTH_M = 0.28;
+/**
+ * Metros no plano do marcador.
+ * Na leitura frontal, −Z recua para o fundo da cena (+Z empurrava os vultos para baixo na tela).
+ */
+const AR_GHOST_DEPTH_M = -0.95;
 /** Metros — distância lateral entre centros dos três fantasmas. */
-const AR_GHOST_SPREAD_M = 0.2;
+const AR_GHOST_SPREAD_M = 0.38;
 
 export const pieces: Piece[] = [
   {
