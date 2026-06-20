@@ -399,73 +399,17 @@
     }
   }
 
-  function attachIntroRiseAnimation(marker, entity, finalPosition, intro) {
-    const delayMs = intro.delayMs || 1000;
-    const offsetY = intro.offsetY !== undefined ? intro.offsetY : -0.55;
-    const durationMs = intro.durationMs || 1100;
-    const px = finalPosition[0];
-    const py = finalPosition[1];
-    const pz = finalPosition[2];
-    const startY = py + offsetY;
-    const from = px + " " + startY + " " + pz;
-    const to = px + " " + py + " " + pz;
-
-    function resetPosition() {
-      entity.setAttribute("position", from);
-      entity.removeAttribute("animation__rise");
-    }
-
-    function playRise() {
-      entity.setAttribute("position", from);
-      entity.setAttribute(
-        "animation__rise",
-        "property: position; from: " +
-          from +
-          "; to: " +
-          to +
-          "; dur: " +
-          durationMs +
-          "; easing: easeOutCubic",
-      );
-    }
-
-    resetPosition();
-
-    var riseTimer = null;
-
-    marker.addEventListener("markerFound", function () {
-      if (riseTimer) return;
-      riseTimer = window.setTimeout(function () {
-        riseTimer = null;
-        playRise();
-      }, delayMs);
-    });
-
-    marker.addEventListener("markerLost", function () {
-      if (riseTimer) {
-        clearTimeout(riseTimer);
-        riseTimer = null;
-      }
-      resetPosition();
-    });
-  }
-
   function appendBackgroundModels(marker, models) {
     if (!models) return;
     models.forEach(function (model, index) {
-      var position = model.position || [0, 0, 0];
-      var entity = appendModelEntity(
+      appendModelEntity(
         marker,
         "ar-background-entity-" + index,
         model.src,
         model.scale,
-        position,
+        model.position,
         model.rotation,
       );
-
-      if (model.introAnimation) {
-        attachIntroRiseAnimation(marker, entity, position, model.introAnimation);
-      }
     });
   }
 

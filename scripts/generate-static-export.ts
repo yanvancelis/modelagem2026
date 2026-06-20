@@ -148,7 +148,6 @@ function mapModelPlacements(models: ArModelPlacement[] | undefined) {
     scale: model.scale ?? [1, 1, 1],
     position: model.position ?? [0, 0, 0],
     rotation: model.rotation ?? [0, 0, 0],
-    ...(model.introAnimation ? { introAnimation: model.introAnimation } : {}),
   }));
 }
 

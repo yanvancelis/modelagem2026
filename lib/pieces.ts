@@ -1,17 +1,10 @@
 export type ArModelId = "lampiao";
 
-export type ArIntroAnimation = {
-  delayMs?: number;
-  offsetY?: number;
-  durationMs?: number;
-};
-
 export type ArModelPlacement = {
   src: string;
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];
-  introAnimation?: ArIntroAnimation;
 };
 
 export type Piece = {
@@ -87,11 +80,6 @@ export const pieces: Piece[] = [
           scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
           position: [0, 0.002, 0],
           rotation: AR_GHOST_FLAT_ROTATION,
-          introAnimation: {
-            delayMs: 1000,
-            offsetY: -0.65,
-            durationMs: 1200,
-          },
         },
       ],
     },

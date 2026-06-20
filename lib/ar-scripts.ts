@@ -6,18 +6,11 @@ export function resolvePublicUrl(path: string): string {
   return new URL(normalized, window.location.origin).href;
 }
 
-export type ArIntroAnimation = {
-  delayMs?: number;
-  offsetY?: number;
-  durationMs?: number;
-};
-
 export type ArModelPlacement = {
   src: string;
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];
-  introAnimation?: ArIntroAnimation;
 };
 
 export type ArSceneConfig = {
@@ -31,69 +24,16 @@ export type ArSceneConfig = {
   backgroundModels?: ArModelPlacement[];
 };
 
-function attachIntroRiseAnimation(
-  marker: HTMLElement,
-  entity: HTMLElement,
-  finalPosition: [number, number, number],
-  intro: ArIntroAnimation,
-): void {
-  const delayMs = intro.delayMs ?? 1000;
-  const offsetY = intro.offsetY ?? -0.55;
-  const durationMs = intro.durationMs ?? 1100;
-  const [px, py, pz] = finalPosition;
-  const startY = py + offsetY;
-  const from = `${px} ${startY} ${pz}`;
-  const to = `${px} ${py} ${pz}`;
-
-  const resetPosition = () => {
-    entity.setAttribute("position", from);
-    entity.removeAttribute("animation__rise");
-  };
-
-  const playRise = () => {
-    entity.setAttribute("position", from);
-    entity.setAttribute(
-      "animation__rise",
-      `property: position; from: ${from}; to: ${to}; dur: ${durationMs}; easing: easeOutCubic`,
-    );
-  };
-
-  resetPosition();
-
-  let riseTimer: number | null = null;
-
-  marker.addEventListener("markerFound", () => {
-    if (riseTimer !== null) return;
-    riseTimer = window.setTimeout(() => {
-      riseTimer = null;
-      playRise();
-    }, delayMs);
-  });
-
-  marker.addEventListener("markerLost", () => {
-    if (riseTimer !== null) {
-      window.clearTimeout(riseTimer);
-      riseTimer = null;
-    }
-    resetPosition();
-  });
-}
-
 function appendBackgroundModels(marker: HTMLElement, models?: ArModelPlacement[]): void {
   models?.forEach((model, index) => {
-    const position = model.position ?? [0, 0, 0];
-    const entity = appendModelEntity(
+    appendModelEntity(
       marker,
       `ar-background-entity-${index}`,
       model.src,
       model.scale,
-      position,
+      model.position,
       model.rotation,
     );
-
-    if (model.introAnimation) {
-      attachIntroRiseAnimation(marker, entity, position, model.introAnimation);
-    }
   });
 }
 
