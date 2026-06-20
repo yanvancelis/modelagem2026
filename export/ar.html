@@ -8,8 +8,9 @@
 </head>
 <body class="has-mobile-nav">
   <div class="file-protocol-warning">
-    A câmera da RA não funciona abrindo o arquivo direto (file://). Use um servidor local:
-    <code>npm run export:serve</code> e acesse <code>http://localhost:3004</code>
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use a versão online em
+    <a href="https://modelagem2026.vercel.app/conteudo/lampiao/ar">https://modelagem2026.vercel.app/conteudo/lampiao/ar</a>
+    ou um servidor local: <code>npm run export:serve</code> → <code>http://localhost:3004</code>
   </div>
   <header class="site-header">
   <div class="site-header__inner">
@@ -49,7 +50,7 @@
   <img id="ar-photo-modal-img" alt="Foto AR">
 </div>
 <script>
-  window.__AR_CONFIG__ = {"modelSrc":"/models/lampiao.glb","markerPattern":"/markers/lampiao.patt","markerImage":"/markers/lampiao-marker.png","markerSize":1,"scale":[0.117,0.117,0.117],"position":[0,0,0],"rotation":[0,0,0],"title":"O lampião e suas sombras"};
+  window.__AR_CONFIG__ = {"modelSrc":"/models/lampiao.glb","markerPattern":"/markers/lampiao.patt","markerImage":"/markers/lampiao-marker.png","markerSize":1,"scale":[0.234,0.234,0.234],"position":[0,0,0],"rotation":[0,0,0],"backgroundModel":{"src":"/models/vulto.glb","scale":[0.234,0.234,0.234],"position":[0,0.05,-0.45],"rotation":[0,0,0]},"title":"O lampião e suas sombras"};
 </script>
 <script src="js/ar-runtime.js"></script>
 <script>

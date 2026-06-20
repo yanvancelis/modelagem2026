@@ -399,6 +399,21 @@
     }
   }
 
+  function appendModelEntity(parent, id, src, scale, position, rotation) {
+    const s = scale || [1, 1, 1];
+    const p = position || [0, 0, 0];
+    const r = rotation || [0, 0, 0];
+
+    const entity = document.createElement("a-entity");
+    entity.id = id;
+    entity.setAttribute("gltf-model", resolvePublicUrl(src));
+    entity.setAttribute("position", p.join(" "));
+    entity.setAttribute("rotation", r.join(" "));
+    entity.setAttribute("scale", s.join(" "));
+    parent.appendChild(entity);
+    return entity;
+  }
+
   function mountArScene(host, config, callbacks) {
     host.replaceChildren();
 
@@ -421,20 +436,30 @@
     marker.setAttribute("min-confidence", "0.45");
     marker.setAttribute("smooth", "true");
 
-    const scale = config.scale || [1, 1, 1];
-    const position = config.position || [0, 0, 0];
-    const rotation = config.rotation || [0, 0, 0];
+    if (config.backgroundModel) {
+      const bg = config.backgroundModel;
+      appendModelEntity(
+        marker,
+        "ar-background-entity",
+        bg.src,
+        bg.scale,
+        bg.position,
+        bg.rotation,
+      );
+    }
 
-    const model = document.createElement("a-entity");
-    model.setAttribute("gltf-model", resolvePublicUrl(config.modelSrc));
-    model.setAttribute("position", position.join(" "));
-    model.setAttribute("rotation", rotation.join(" "));
-    model.setAttribute("scale", scale.join(" "));
+    appendModelEntity(
+      marker,
+      "ar-model-entity",
+      config.modelSrc,
+      config.scale,
+      config.position,
+      config.rotation,
+    );
 
     const camera = document.createElement("a-entity");
     camera.setAttribute("camera", "");
 
-    marker.appendChild(model);
     scene.appendChild(marker);
     scene.appendChild(camera);
     host.appendChild(scene);
@@ -485,13 +510,22 @@
           onSceneLoaded: (sceneEl) => registerActiveArSession(sceneEl),
         });
 
-        stopWatching = watchArVideoPlacement();
-        loading?.remove();
-        controls?.classList.remove("is-hidden");
-        refreshGallery();
+        try {
+          stopWatching = watchArVideoPlacement();
+          loading?.remove();
+          controls?.classList.remove("is-hidden");
+          refreshGallery();
+        } catch (cause) {
+          console.error("AR placement failed:", cause);
+          if (loading) loading.textContent = "Não foi possível iniciar a câmera AR.";
+        }
       })
-      .catch(() => {
-        if (loading) loading.textContent = "Não foi possível carregar a experiência AR.";
+      .catch((cause) => {
+        console.error("AR init failed:", cause);
+        if (loading) {
+          const detail = cause && cause.message ? " (" + cause.message + ")" : "";
+          loading.textContent = "Não foi possível carregar a experiência AR." + detail;
+        }
       });
 
     shutter?.addEventListener("click", async () => {

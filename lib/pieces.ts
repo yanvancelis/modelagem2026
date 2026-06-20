@@ -1,5 +1,12 @@
 export type ArModelId = "lampiao";
 
+export type ArModelPlacement = {
+  src: string;
+  scale?: [number, number, number];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+};
+
 export type Piece = {
   slug: string;
   title: string;
@@ -24,6 +31,7 @@ export type Piece = {
     markerPattern: string;
     markerImage: string;
     markerSize?: number;
+    backgroundModel?: ArModelPlacement;
   };
 };
 
@@ -54,12 +62,18 @@ export const pieces: Piece[] = [
       poster: "/assets/fachada-museu.png",
     },
     ar: {
-      scale: [0.117, 0.117, 0.117],
+      scale: [0.234, 0.234, 0.234],
       position: [0, 0, 0],
       rotation: [0, 0, 0],
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",
       markerSize: 1,
+      backgroundModel: {
+        src: "/models/vulto.glb",
+        scale: [0.234, 0.234, 0.234],
+        position: [0, 0.05, -0.45],
+        rotation: [0, 0, 0],
+      },
     },
   },
 ];

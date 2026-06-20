@@ -6,6 +6,13 @@ export function resolvePublicUrl(path: string): string {
   return new URL(normalized, window.location.origin).href;
 }
 
+export type ArModelPlacement = {
+  src: string;
+  scale?: [number, number, number];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+};
+
 export type ArSceneConfig = {
   modelSrc: string;
   markerPattern: string;
@@ -13,7 +20,30 @@ export type ArSceneConfig = {
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];
+  backgroundModel?: ArModelPlacement;
 };
+
+function appendModelEntity(
+  parent: HTMLElement,
+  id: string,
+  src: string,
+  scale?: [number, number, number],
+  position?: [number, number, number],
+  rotation?: [number, number, number],
+): HTMLElement {
+  const [sx, sy, sz] = scale ?? [1, 1, 1];
+  const [px, py, pz] = position ?? [0, 0, 0];
+  const [rx, ry, rz] = rotation ?? [0, 0, 0];
+
+  const entity = document.createElement("a-entity");
+  entity.id = id;
+  entity.setAttribute("gltf-model", resolvePublicUrl(src));
+  entity.setAttribute("position", `${px} ${py} ${pz}`);
+  entity.setAttribute("rotation", `${rx} ${ry} ${rz}`);
+  entity.setAttribute("scale", `${sx} ${sy} ${sz}`);
+  parent.appendChild(entity);
+  return entity;
+}
 
 export async function verifyPatternMarker(patternPath: string): Promise<boolean> {
   try {
@@ -56,21 +86,30 @@ export function mountArScene(
   marker.setAttribute("min-confidence", "0.45");
   marker.setAttribute("smooth", "true");
 
-  const [sx, sy, sz] = config.scale ?? [1, 1, 1];
-  const [px, py, pz] = config.position ?? [0, 0, 0];
-  const [rx, ry, rz] = config.rotation ?? [0, 0, 0];
+  if (config.backgroundModel) {
+    const bg = config.backgroundModel;
+    appendModelEntity(
+      marker,
+      "ar-background-entity",
+      bg.src,
+      bg.scale,
+      bg.position,
+      bg.rotation,
+    );
+  }
 
-  const model = document.createElement("a-entity");
-  model.id = "ar-model-entity";
-  model.setAttribute("gltf-model", resolvePublicUrl(config.modelSrc));
-  model.setAttribute("position", `${px} ${py} ${pz}`);
-  model.setAttribute("rotation", `${rx} ${ry} ${rz}`);
-  model.setAttribute("scale", `${sx} ${sy} ${sz}`);
+  appendModelEntity(
+    marker,
+    "ar-model-entity",
+    config.modelSrc,
+    config.scale,
+    config.position,
+    config.rotation,
+  );
 
   const camera = document.createElement("a-entity");
   camera.setAttribute("camera", "");
 
-  marker.appendChild(model);
   scene.appendChild(marker);
   scene.appendChild(camera);
   host.appendChild(scene);

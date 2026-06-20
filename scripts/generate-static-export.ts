@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
 const outDir = join(root, "export");
 const templatesDir = join(__dirname, "static-export");
+const LIVE_URL = "https://modelagem2026.vercel.app";
 
 function escapeHtml(value: string): string {
   return value
@@ -60,8 +61,9 @@ function shell(title: string, body: string, options?: { active?: string; mobileN
 </head>
 <body class="${options?.mobileNav ? "has-mobile-nav" : ""}">
   <div class="file-protocol-warning">
-    A câmera da RA não funciona abrindo o arquivo direto (file://). Use um servidor local:
-    <code>npm run export:serve</code> e acesse <code>http://localhost:3004</code>
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use a versão online em
+    <a href="${LIVE_URL}/conteudo/lampiao/ar">${LIVE_URL}/conteudo/lampiao/ar</a>
+    ou um servidor local: <code>npm run export:serve</code> → <code>http://localhost:3004</code>
   </div>
   ${header(options?.active ?? "index.html")}
   ${body}
@@ -141,6 +143,15 @@ function buildPiecePage(piece: (typeof pieces)[0]): string {
 }
 
 function buildArPage(piece: (typeof pieces)[0]): string {
+  const backgroundModel = piece.ar?.backgroundModel
+    ? {
+        src: rel(piece.ar.backgroundModel.src),
+        scale: piece.ar.backgroundModel.scale ?? [1, 1, 1],
+        position: piece.ar.backgroundModel.position ?? [0, 0, 0],
+        rotation: piece.ar.backgroundModel.rotation ?? [0, 0, 0],
+      }
+    : undefined;
+
   const arConfig = {
     modelSrc: rel(piece.model?.src ?? ""),
     markerPattern: rel(piece.ar?.markerPattern ?? "/markers/lampiao.patt"),
@@ -149,6 +160,7 @@ function buildArPage(piece: (typeof pieces)[0]): string {
     scale: piece.ar?.scale ?? [1, 1, 1],
     position: piece.ar?.position ?? [0, 0, 0],
     rotation: piece.ar?.rotation ?? [0, 0, 0],
+    ...(backgroundModel ? { backgroundModel } : {}),
     title: piece.title,
   };
 
@@ -161,7 +173,7 @@ function buildArPage(piece: (typeof pieces)[0]): string {
       <div>
         <p class="ar-card__title">${escapeHtml(piece.title)}</p>
         <p class="ar-card__hint" id="ar-status-hint">Aponte para o marcador impresso para visualizar a experiência</p>
-        <a href="/markers/lampiao-marcador.pdf" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.9);text-decoration:underline">Baixar marcador para impressão</a>
+        <a href="${rel("/markers/lampiao-marcador.pdf")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.9);text-decoration:underline">Baixar marcador para impressão</a>
       </div>
       <img class="ar-card__marker" src="${rel(piece.ar?.markerImage ?? "/markers/lampiao-marker.png")}" alt="Marcador da exposição">
     </div>
