@@ -35,19 +35,21 @@ export type Piece = {
   };
 };
 
-/** Lampião deitado no plano do marcador (leitura de frente). */
-const AR_LAMP_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
-/** Fantasmas em pé, voltados para a câmera. */
+/**
+ * Composição AR (vista do usuário ao apontar para o marcador):
+ * - Lampião: canto inferior esquerdo, grande, perto da câmera (−Z)
+ * - Fantasmas: canto superior direito, pequenos, ao fundo (+Z), agrupados
+ */
+const AR_LAMP_ROTATION: [number, number, number] = [0, 0, 0];
 const AR_GHOST_ROTATION: [number, number, number] = [0, 180, 0];
-/** Metros — lampião à esquerda e bem próximo (−Z = perto da câmera neste marcador). */
-const AR_LAMP_X_M = -0.32;
-const AR_LAMP_DEPTH_M = -0.38;
-/** Metros — fileira de fantasmas ao fundo (+Z). */
-const AR_GHOST_ROW_Z_M = 0.98;
-/** Metros — espalhamento lateral dos fantasmas no fundo. */
-const AR_GHOST_SPREAD_X_M = 0.34;
-/** Metros — leve elevação para não intersectar o plano do marcador. */
-const AR_GHOST_LIFT_M = 0.05;
+
+const AR_LAMP_X_M = -0.42;
+const AR_LAMP_Y_M = 0.02;
+const AR_LAMP_Z_M = -0.52;
+const AR_LAMP_SCALE = 0.54;
+
+const AR_GHOST_Z_M = 1.22;
+const AR_GHOST_SCALE = 0.27;
 
 export const pieces: Piece[] = [
   {
@@ -76,29 +78,29 @@ export const pieces: Piece[] = [
       poster: "/assets/fachada-museu.png",
     },
     ar: {
-      scale: [0.46, 0.46, 0.46],
-      position: [AR_LAMP_X_M, AR_GHOST_LIFT_M, AR_LAMP_DEPTH_M],
-      rotation: AR_LAMP_FLAT_ROTATION,
+      scale: [AR_LAMP_SCALE, AR_LAMP_SCALE, AR_LAMP_SCALE],
+      position: [AR_LAMP_X_M, AR_LAMP_Y_M, AR_LAMP_Z_M],
+      rotation: AR_LAMP_ROTATION,
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",
       markerSize: 1,
       backgroundModels: [
         {
           src: "/models/vulto.glb",
-          scale: [0.34, 0.34, 0.34],
-          position: [-AR_GHOST_SPREAD_X_M, AR_GHOST_LIFT_M, AR_GHOST_ROW_Z_M],
+          scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
+          position: [0.34, 0.24, AR_GHOST_Z_M],
           rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
-          scale: [0.34, 0.34, 0.34],
-          position: [0.08, AR_GHOST_LIFT_M, AR_GHOST_ROW_Z_M + 0.1],
+          scale: [AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08],
+          position: [0.46, 0.34, AR_GHOST_Z_M + 0.06],
           rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
-          scale: [0.34, 0.34, 0.34],
-          position: [AR_GHOST_SPREAD_X_M + 0.12, AR_GHOST_LIFT_M, AR_GHOST_ROW_Z_M],
+          scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
+          position: [0.56, 0.24, AR_GHOST_Z_M],
           rotation: AR_GHOST_ROTATION,
         },
       ],
