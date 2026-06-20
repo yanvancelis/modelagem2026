@@ -77,9 +77,10 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
         mountArScene(
           sceneHostRef.current,
           {
-            modelSrc,
+            modelSrc: ar?.showPrimaryModel === false ? undefined : modelSrc,
             markerPattern,
             markerSize: ar?.markerSize,
+            showPrimaryModel: ar?.showPrimaryModel,
             scale: ar?.scale,
             position: ar?.position,
             rotation: ar?.rotation,

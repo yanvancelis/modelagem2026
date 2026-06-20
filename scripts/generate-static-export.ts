@@ -154,8 +154,10 @@ function mapModelPlacements(models: ArModelPlacement[] | undefined) {
 function buildArPage(piece: (typeof pieces)[0]): string {
   const backgroundModels = mapModelPlacements(piece.ar?.backgroundModels);
 
+  const showPrimaryModel = piece.ar?.showPrimaryModel !== false;
+
   const arConfig = {
-    modelSrc: rel(piece.model?.src ?? ""),
+    ...(showPrimaryModel ? { modelSrc: rel(piece.model?.src ?? "") } : { showPrimaryModel: false }),
     markerPattern: rel(piece.ar?.markerPattern ?? "/markers/lampiao.patt"),
     markerImage: rel(piece.ar?.markerImage ?? "/markers/lampiao-marker.png"),
     markerSize: piece.ar?.markerSize ?? 1,

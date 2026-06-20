@@ -452,14 +452,16 @@
 
     appendBackgroundModels(marker, config.backgroundModels);
 
-    appendModelEntity(
-      marker,
-      "ar-model-entity",
-      config.modelSrc,
-      config.scale,
-      config.position,
-      config.rotation,
-    );
+    if (config.modelSrc && config.showPrimaryModel !== false) {
+      appendModelEntity(
+        marker,
+        "ar-model-entity",
+        config.modelSrc,
+        config.scale,
+        config.position,
+        config.rotation,
+      );
+    }
 
     const camera = document.createElement("a-entity");
     camera.setAttribute("camera", "");

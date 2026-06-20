@@ -154,3 +154,22 @@ body.ar-active #ar-scene canvas.a-canvas {
     background-position: 100% 50%;
   }
 }
+
+body.marcador-lampiao-page {
+  background: #ffffff;
+}
+
+body.marcador-lampiao-page .site-header,
+body.marcador-lampiao-page nav[aria-label="Alternar entre conteúdo e realidade aumentada"] {
+  display: none;
+}
+
+body.marcador-lampiao-page main {
+  padding-bottom: 0 !important;
+}
+
+.marcador-lampiao-page__viewer model-viewer {
+  min-height: 100%;
+  background: transparent;
+  border-radius: 0;
+}

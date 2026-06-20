@@ -14,9 +14,10 @@ export type ArModelPlacement = {
 };
 
 export type ArSceneConfig = {
-  modelSrc: string;
+  modelSrc?: string;
   markerPattern: string;
   markerSize?: number;
+  showPrimaryModel?: boolean;
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];
@@ -101,14 +102,16 @@ export function mountArScene(
 
   appendBackgroundModels(marker, config.backgroundModels);
 
-  appendModelEntity(
-    marker,
-    "ar-model-entity",
-    config.modelSrc,
-    config.scale,
-    config.position,
-    config.rotation,
-  );
+  if (config.modelSrc && config.showPrimaryModel !== false) {
+    appendModelEntity(
+      marker,
+      "ar-model-entity",
+      config.modelSrc,
+      config.scale,
+      config.position,
+      config.rotation,
+    );
+  }
 
   const camera = document.createElement("a-entity");
   camera.setAttribute("camera", "");

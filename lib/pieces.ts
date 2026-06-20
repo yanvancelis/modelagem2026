@@ -31,25 +31,15 @@ export type Piece = {
     markerPattern: string;
     markerImage: string;
     markerSize?: number;
+    showPrimaryModel?: boolean;
     backgroundModels?: ArModelPlacement[];
   };
 };
 
-/**
- * Composição AR (vista do usuário ao apontar para o marcador):
- * - Lampião: canto inferior esquerdo, grande, perto da câmera (−Z)
- * - Fantasmas: canto superior direito, pequenos, ao fundo (+Z), agrupados
- */
-const AR_LAMP_ROTATION: [number, number, number] = [0, 0, 0];
+/** Fantasmas em pé, voltados para a câmera. */
 const AR_GHOST_ROTATION: [number, number, number] = [0, 180, 0];
-
-const AR_LAMP_X_M = -0.42;
-const AR_LAMP_Y_M = 0.02;
-const AR_LAMP_Z_M = -0.52;
-const AR_LAMP_SCALE = 0.54;
-
-const AR_GHOST_Z_M = 1.22;
-const AR_GHOST_SCALE = 0.27;
+/** Escala base dos fantasmas na RA (≈3× o tamanho anterior de 0,27). */
+const AR_GHOST_SCALE = 0.81;
 
 export const pieces: Piece[] = [
   {
@@ -78,9 +68,9 @@ export const pieces: Piece[] = [
       poster: "/assets/fachada-museu.png",
     },
     ar: {
-      scale: [AR_LAMP_SCALE, AR_LAMP_SCALE, AR_LAMP_SCALE],
-      position: [AR_LAMP_X_M, AR_LAMP_Y_M, AR_LAMP_Z_M],
-      rotation: AR_LAMP_ROTATION,
+      scale: [1, 1, 1],
+      position: [0, 0, 0],
+      showPrimaryModel: false,
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",
       markerSize: 1,
@@ -88,19 +78,19 @@ export const pieces: Piece[] = [
         {
           src: "/models/vulto.glb",
           scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
-          position: [0.34, 0.24, AR_GHOST_Z_M],
+          position: [-0.42, 0.06, 0],
           rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
           scale: [AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08],
-          position: [0.46, 0.34, AR_GHOST_Z_M + 0.06],
+          position: [0, 0.14, 0],
           rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
           scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
-          position: [0.56, 0.24, AR_GHOST_Z_M],
+          position: [0.42, 0.06, 0],
           rotation: AR_GHOST_ROTATION,
         },
       ],
