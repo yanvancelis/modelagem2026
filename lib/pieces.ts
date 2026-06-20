@@ -35,12 +35,14 @@ export type Piece = {
   };
 };
 
-/** Rotação para modelos deitados no plano do marcador (leitura de frente). */
-const AR_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
-/** Metros no plano do marcador — fantasmas ~22 cm atrás do lampião. */
-const AR_GHOST_DEPTH_M = 0.22;
-/** Metros — espaçamento lateral entre os três fantasmas. */
-const AR_GHOST_SPREAD_M = 0.14;
+/** Lampião deitado no plano do marcador (leitura de frente). */
+const AR_LAMP_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
+/** Fantasmas em pé, de frente para a câmera. */
+const AR_GHOST_ROTATION: [number, number, number] = [0, 0, 0];
+/** Metros — fantasmas ao fundo (+Z afasta do observador na leitura frontal). */
+const AR_GHOST_DEPTH_M = 0.28;
+/** Metros — distância lateral entre centros dos três fantasmas. */
+const AR_GHOST_SPREAD_M = 0.2;
 
 export const pieces: Piece[] = [
   {
@@ -70,8 +72,8 @@ export const pieces: Piece[] = [
     },
     ar: {
       scale: [0.42, 0.42, 0.42],
-      position: [0, 0.002, 0],
-      rotation: AR_FLAT_ROTATION,
+      position: [0, 0, 0],
+      rotation: AR_LAMP_FLAT_ROTATION,
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",
       markerSize: 1,
@@ -79,20 +81,20 @@ export const pieces: Piece[] = [
         {
           src: "/models/vulto.glb",
           scale: [0.38, 0.38, 0.38],
-          position: [-AR_GHOST_SPREAD_M, 0.002, -AR_GHOST_DEPTH_M],
-          rotation: AR_FLAT_ROTATION,
+          position: [-AR_GHOST_SPREAD_M, 0, AR_GHOST_DEPTH_M],
+          rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
           scale: [0.38, 0.38, 0.38],
-          position: [0, 0.002, -AR_GHOST_DEPTH_M],
-          rotation: AR_FLAT_ROTATION,
+          position: [0, 0, AR_GHOST_DEPTH_M],
+          rotation: AR_GHOST_ROTATION,
         },
         {
           src: "/models/vulto.glb",
           scale: [0.38, 0.38, 0.38],
-          position: [AR_GHOST_SPREAD_M, 0.002, -AR_GHOST_DEPTH_M],
-          rotation: AR_FLAT_ROTATION,
+          position: [AR_GHOST_SPREAD_M, 0, AR_GHOST_DEPTH_M],
+          rotation: AR_GHOST_ROTATION,
         },
       ],
     },
