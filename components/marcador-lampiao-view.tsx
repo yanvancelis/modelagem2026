@@ -28,23 +28,12 @@ export function MarcadorLampiaoView() {
 
       <footer className="marcador-lampiao-page__footer border-t border-neutral-200 bg-white px-6 py-8">
         <div className="mx-auto flex max-w-lg flex-col items-center gap-4 text-center">
-          <p className="text-xs uppercase tracking-[0.12em] text-neutral-500">
-            Marcador para impressão
-          </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={markerImage}
             alt="Marcador AR da exposição Lampião"
-            className="w-full max-w-[220px] rounded-sm border border-neutral-200 bg-white p-3 shadow-sm"
+            className="w-full max-w-[280px] rounded-sm border border-neutral-200 bg-white p-3 shadow-sm"
           />
-          <a
-            href="/markers/lampiao-marcador.pdf"
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-neutral-700 underline underline-offset-2"
-          >
-            Baixar PDF do marcador
-          </a>
         </div>
       </footer>
     </div>
