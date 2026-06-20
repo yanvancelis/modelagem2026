@@ -36,10 +36,10 @@ export type Piece = {
   };
 };
 
-/** Fantasmas em pé, voltados para a câmera. */
-const AR_GHOST_ROTATION: [number, number, number] = [0, 180, 0];
-/** Escala base dos fantasmas na RA (≈3× o tamanho anterior de 0,27). */
-const AR_GHOST_SCALE = 0.81;
+/** Fantasma deitado no plano do marcador. */
+const AR_GHOST_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
+/** Escala ampliada — um único vulto cobrindo o marcador. */
+const AR_GHOST_SCALE = 1.85;
 
 export const pieces: Piece[] = [
   {
@@ -78,20 +78,8 @@ export const pieces: Piece[] = [
         {
           src: "/models/vulto.glb",
           scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
-          position: [-0.42, 0.06, 0],
-          rotation: AR_GHOST_ROTATION,
-        },
-        {
-          src: "/models/vulto.glb",
-          scale: [AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08, AR_GHOST_SCALE * 1.08],
-          position: [0, 0.14, 0],
-          rotation: AR_GHOST_ROTATION,
-        },
-        {
-          src: "/models/vulto.glb",
-          scale: [AR_GHOST_SCALE, AR_GHOST_SCALE, AR_GHOST_SCALE],
-          position: [0.42, 0.06, 0],
-          rotation: AR_GHOST_ROTATION,
+          position: [0, 0.002, 0],
+          rotation: AR_GHOST_FLAT_ROTATION,
         },
       ],
     },
