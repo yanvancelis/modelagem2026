@@ -1,7 +1,7 @@
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pieces } from "../lib/pieces";
+import { pieces, type ArModelPlacement } from "../lib/pieces";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -142,15 +142,17 @@ function buildPiecePage(piece: (typeof pieces)[0]): string {
   );
 }
 
+function mapModelPlacements(models: ArModelPlacement[] | undefined) {
+  return models?.map((model) => ({
+    src: rel(model.src),
+    scale: model.scale ?? [1, 1, 1],
+    position: model.position ?? [0, 0, 0],
+    rotation: model.rotation ?? [0, 0, 0],
+  }));
+}
+
 function buildArPage(piece: (typeof pieces)[0]): string {
-  const backgroundModel = piece.ar?.backgroundModel
-    ? {
-        src: rel(piece.ar.backgroundModel.src),
-        scale: piece.ar.backgroundModel.scale ?? [1, 1, 1],
-        position: piece.ar.backgroundModel.position ?? [0, 0, 0],
-        rotation: piece.ar.backgroundModel.rotation ?? [0, 0, 0],
-      }
-    : undefined;
+  const backgroundModels = mapModelPlacements(piece.ar?.backgroundModels);
 
   const arConfig = {
     modelSrc: rel(piece.model?.src ?? ""),
@@ -160,7 +162,7 @@ function buildArPage(piece: (typeof pieces)[0]): string {
     scale: piece.ar?.scale ?? [1, 1, 1],
     position: piece.ar?.position ?? [0, 0, 0],
     rotation: piece.ar?.rotation ?? [0, 0, 0],
-    ...(backgroundModel ? { backgroundModel } : {}),
+    ...(backgroundModels?.length ? { backgroundModels } : {}),
     title: piece.title,
   };
 

@@ -83,7 +83,7 @@ export function ArExperience({ slug, title, modelSrc, ar }: ArExperienceProps) {
             scale: ar?.scale,
             position: ar?.position,
             rotation: ar?.rotation,
-            backgroundModel: ar?.backgroundModel,
+            backgroundModels: ar?.backgroundModels,
           },
           {
             onMarkerFound: () => setMarkerStatus("found"),

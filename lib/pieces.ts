@@ -31,9 +31,16 @@ export type Piece = {
     markerPattern: string;
     markerImage: string;
     markerSize?: number;
-    backgroundModel?: ArModelPlacement;
+    backgroundModels?: ArModelPlacement[];
   };
 };
+
+/** Rotação para modelos deitados no plano do marcador (leitura de frente). */
+const AR_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
+/** Metros no plano do marcador — fantasmas ~22 cm atrás do lampião. */
+const AR_GHOST_DEPTH_M = 0.22;
+/** Metros — espaçamento lateral entre os três fantasmas. */
+const AR_GHOST_SPREAD_M = 0.14;
 
 export const pieces: Piece[] = [
   {
@@ -62,18 +69,32 @@ export const pieces: Piece[] = [
       poster: "/assets/fachada-museu.png",
     },
     ar: {
-      scale: [0.234, 0.234, 0.234],
-      position: [0, 0, 0],
-      rotation: [0, 0, 0],
+      scale: [0.42, 0.42, 0.42],
+      position: [0, 0.002, 0],
+      rotation: AR_FLAT_ROTATION,
       markerPattern: "/markers/lampiao.patt",
       markerImage: "/markers/lampiao-marker.png",
       markerSize: 1,
-      backgroundModel: {
-        src: "/models/vulto.glb",
-        scale: [0.234, 0.234, 0.234],
-        position: [0, 0.05, -0.45],
-        rotation: [0, 0, 0],
-      },
+      backgroundModels: [
+        {
+          src: "/models/vulto.glb",
+          scale: [0.38, 0.38, 0.38],
+          position: [-AR_GHOST_SPREAD_M, 0.002, -AR_GHOST_DEPTH_M],
+          rotation: AR_FLAT_ROTATION,
+        },
+        {
+          src: "/models/vulto.glb",
+          scale: [0.38, 0.38, 0.38],
+          position: [0, 0.002, -AR_GHOST_DEPTH_M],
+          rotation: AR_FLAT_ROTATION,
+        },
+        {
+          src: "/models/vulto.glb",
+          scale: [0.38, 0.38, 0.38],
+          position: [AR_GHOST_SPREAD_M, 0.002, -AR_GHOST_DEPTH_M],
+          rotation: AR_FLAT_ROTATION,
+        },
+      ],
     },
   },
 ];

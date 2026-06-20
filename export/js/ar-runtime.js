@@ -399,6 +399,20 @@
     }
   }
 
+  function appendBackgroundModels(marker, models) {
+    if (!models) return;
+    models.forEach(function (model, index) {
+      appendModelEntity(
+        marker,
+        "ar-background-entity-" + index,
+        model.src,
+        model.scale,
+        model.position,
+        model.rotation,
+      );
+    });
+  }
+
   function appendModelEntity(parent, id, src, scale, position, rotation) {
     const s = scale || [1, 1, 1];
     const p = position || [0, 0, 0];
@@ -436,17 +450,7 @@
     marker.setAttribute("min-confidence", "0.45");
     marker.setAttribute("smooth", "true");
 
-    if (config.backgroundModel) {
-      const bg = config.backgroundModel;
-      appendModelEntity(
-        marker,
-        "ar-background-entity",
-        bg.src,
-        bg.scale,
-        bg.position,
-        bg.rotation,
-      );
-    }
+    appendBackgroundModels(marker, config.backgroundModels);
 
     appendModelEntity(
       marker,

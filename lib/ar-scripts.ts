@@ -20,8 +20,21 @@ export type ArSceneConfig = {
   scale?: [number, number, number];
   position?: [number, number, number];
   rotation?: [number, number, number];
-  backgroundModel?: ArModelPlacement;
+  backgroundModels?: ArModelPlacement[];
 };
+
+function appendBackgroundModels(marker: HTMLElement, models?: ArModelPlacement[]): void {
+  models?.forEach((model, index) => {
+    appendModelEntity(
+      marker,
+      `ar-background-entity-${index}`,
+      model.src,
+      model.scale,
+      model.position,
+      model.rotation,
+    );
+  });
+}
 
 function appendModelEntity(
   parent: HTMLElement,
@@ -86,17 +99,7 @@ export function mountArScene(
   marker.setAttribute("min-confidence", "0.45");
   marker.setAttribute("smooth", "true");
 
-  if (config.backgroundModel) {
-    const bg = config.backgroundModel;
-    appendModelEntity(
-      marker,
-      "ar-background-entity",
-      bg.src,
-      bg.scale,
-      bg.position,
-      bg.rotation,
-    );
-  }
+  appendBackgroundModels(marker, config.backgroundModels);
 
   appendModelEntity(
     marker,
