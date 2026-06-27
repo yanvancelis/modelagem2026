@@ -39,7 +39,7 @@ export type Piece = {
 /** Fantasma deitado no plano do marcador. */
 const AR_GHOST_FLAT_ROTATION: [number, number, number] = [-90, 0, 0];
 /** Escala ampliada — um único vulto cobrindo o marcador. */
-const AR_GHOST_SCALE = 1.85;
+const AR_GHOST_SCALE = 1.295;
 
 export const pieces: Piece[] = [
   {
