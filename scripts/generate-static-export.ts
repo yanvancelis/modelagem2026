@@ -18,7 +18,9 @@ function escapeHtml(value: string): string {
 }
 
 function rel(publicPath: string): string {
-  return publicPath.startsWith("/") ? publicPath : `/${publicPath.replace(/^\//, "")}`;
+  if (!publicPath) return publicPath;
+  if (/^https?:\/\//i.test(publicPath)) return publicPath;
+  return publicPath.replace(/^\//, "");
 }
 
 function header(active: string): string {
@@ -151,12 +153,11 @@ function mapModelPlacements(models: ArModelPlacement[] | undefined) {
   }));
 }
 
-function buildArPage(piece: (typeof pieces)[0]): string {
+function buildArConfig(piece: (typeof pieces)[0]): Record<string, unknown> {
   const backgroundModels = mapModelPlacements(piece.ar?.backgroundModels);
-
   const showPrimaryModel = piece.ar?.showPrimaryModel !== false;
 
-  const arConfig = {
+  return {
     ...(showPrimaryModel ? { modelSrc: rel(piece.model?.src ?? "") } : { showPrimaryModel: false }),
     markerPattern: rel(piece.ar?.markerPattern ?? "/markers/lampiao.patt"),
     markerImage: rel(piece.ar?.markerImage ?? "/markers/lampiao-marker.png"),
@@ -167,10 +168,10 @@ function buildArPage(piece: (typeof pieces)[0]): string {
     ...(backgroundModels?.length ? { backgroundModels } : {}),
     title: piece.title,
   };
+}
 
-  return shell(
-    `AR — ${piece.title}`,
-    `<div class="ar-viewport" data-ar-viewport>
+function arExperienceMarkup(piece: (typeof pieces)[0]): string {
+  return `<div class="ar-viewport" data-ar-viewport>
   <div id="ar-scene-host" style="position:absolute;inset:0;z-index:1"></div>
   <div class="ar-overlay">
     <div class="ar-card">
@@ -202,14 +203,79 @@ function buildArPage(piece: (typeof pieces)[0]): string {
   <img id="ar-photo-modal-img" alt="Foto AR">
 </div>
 <script>
-  window.__AR_CONFIG__ = ${JSON.stringify(arConfig)};
+  window.__AR_CONFIG__ = ${JSON.stringify(buildArConfig(piece))};
 </script>
 <script src="js/ar-runtime.js"></script>
 <script>
   StaticAr.initArPage(window.__AR_CONFIG__);
-</script>`,
-    { active: `${piece.slug}.html`, mobileNav: "ar" },
-  );
+</script>`;
+}
+
+function buildArPage(piece: (typeof pieces)[0]): string {
+  return shell(`AR — ${piece.title}`, arExperienceMarkup(piece), {
+    active: `${piece.slug}.html`,
+    mobileNav: "ar",
+  });
+}
+
+function buildArStandalonePage(piece: (typeof pieces)[0]): string {
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RA — ${escapeHtml(piece.title)}</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="ar-standalone">
+  <div class="file-protocol-warning">
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Use a versão online em
+    <a href="${LIVE_URL}/conteudo/lampiao/ar">${LIVE_URL}/conteudo/lampiao/ar</a>
+    ou um servidor local: <code>npm run export:serve</code> → <code>http://localhost:3004/ra.html</code>
+  </div>
+  ${arExperienceMarkup(piece)}
+</body>
+</html>`;
+}
+
+function buildMarcadorLampiaoPage(piece: (typeof pieces)[0]): string {
+  const markerImage = rel(piece.ar?.markerImage ?? "/markers/lampiao-marker.png");
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marcador — ${escapeHtml(piece.title)} — Museu AR</title>
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="marcador-lampiao-page">
+  <div class="marcador-lampiao-page__shell">
+    <div class="marcador-lampiao-page__main">
+      <div class="marcador-lampiao-page__viewer marcador-lampiao-model-shell">
+        <model-viewer
+          src="${rel(piece.model?.src ?? "")}"
+          poster="${rel(piece.model?.poster ?? piece.cover)}"
+          alt="${escapeHtml(piece.title)}"
+          camera-controls
+          touch-action="pan-y"
+          auto-rotate
+          shadow-intensity="1"
+          ar
+          ar-modes="webxr scene-viewer quick-look">
+        </model-viewer>
+      </div>
+    </div>
+    <footer class="marcador-lampiao-page__footer">
+      <img
+        class="marcador-lampiao-page__marker"
+        src="${markerImage}"
+        alt="Marcador AR da exposição Lampião">
+    </footer>
+  </div>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</body>
+</html>`;
 }
 
 function buildSobre(): string {
@@ -236,6 +302,8 @@ writeFileSync(join(outDir, "js", "ar-runtime.js"), readFileSync(join(templatesDi
 writeFileSync(join(outDir, "index.html"), buildIndex(), "utf8");
 writeFileSync(join(outDir, "sobre.html"), buildSobre(), "utf8");
 writeFileSync(join(outDir, "ar.html"), buildArPage(pieces[0]), "utf8");
+writeFileSync(join(outDir, "ra.html"), buildArStandalonePage(pieces[0]), "utf8");
+writeFileSync(join(outDir, "marcador-lampiao.html"), buildMarcadorLampiaoPage(pieces[0]), "utf8");
 
 for (const piece of pieces) {
   writeFileSync(join(outDir, `${piece.slug}.html`), buildPiecePage(piece), "utf8");

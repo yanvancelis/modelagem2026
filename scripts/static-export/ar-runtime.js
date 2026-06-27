@@ -5,8 +5,8 @@
 
   function resolvePublicUrl(path) {
     if (!path || /^https?:\/\//i.test(path)) return path;
-    const normalized = path.startsWith("/") ? path : "/" + path;
-    return new URL(normalized, window.location.origin).href;
+    const relative = path.startsWith("/") ? path.slice(1) : path;
+    return new URL(relative, window.location.href).href;
   }
 
   let arScriptsPromise = null;
@@ -494,7 +494,10 @@
 
     if (!host || !config) return;
 
-    document.body.classList.add("ar-active", "ar-page", "has-mobile-nav");
+    document.body.classList.add("ar-active", "ar-page");
+    if (!document.body.classList.contains("ar-standalone")) {
+      document.body.classList.add("has-mobile-nav");
+    }
 
     const statusHint = document.getElementById("ar-status-hint");
 

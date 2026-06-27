@@ -9,7 +9,9 @@
     "lint": "next lint",
     "docs:html": "npx tsx scripts/generate-docs-html.ts",
     "export:static": "npx tsx scripts/generate-static-export.ts",
-    "export:serve": "npx serve export -p 3004"
+    "export:serve": "npx serve export -p 3004",
+    "export:ra-kit": "npx tsx scripts/generate-ra-kit.ts",
+    "ra-kit:serve": "npx serve ra-kit -p 3005"
   },
   "dependencies": {
     "@google/model-viewer": "^4.1.0",

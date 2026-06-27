@@ -222,6 +222,26 @@ body.has-mobile-nav main { padding-bottom: 3rem; }
 
 body.is-file-protocol .file-protocol-warning { display: block; }
 
+/* RA standalone (sem header / nav do site) */
+body.ar-standalone {
+  --site-header-height: 0px;
+}
+
+body.ar-standalone.ar-active {
+  --ar-bottom-offset: 0px;
+}
+
+body.ar-standalone .ar-viewport {
+  inset: 0;
+}
+
+body.ar-standalone.ar-active > video,
+body.ar-standalone.ar-active > canvas {
+  top: 0 !important;
+  bottom: 0 !important;
+  height: 100dvh !important;
+}
+
 /* AR page */
 body.ar-page { overflow: hidden; }
 
@@ -392,3 +412,62 @@ body.ar-active > canvas {
 }
 
 .ar-modal img { flex: 1; object-fit: contain; }
+
+body.marcador-lampiao-page {
+  margin: 0;
+  background: #ffffff;
+}
+
+.marcador-lampiao-page__shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.marcador-lampiao-page__main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.marcador-lampiao-page__viewer {
+  width: 100%;
+  max-width: 32rem;
+  height: min(58vh, 520px);
+  overflow: hidden;
+}
+
+.marcador-lampiao-page__viewer model-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.marcador-lampiao-model-shell {
+  border: none !important;
+  background: transparent !important;
+  min-height: 0 !important;
+}
+
+.marcador-lampiao-page__footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.marcador-lampiao-page__marker {
+  width: 100%;
+  max-width: 280px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}

@@ -3,21 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AR — O lampião e suas sombras — Museu AR</title>
-  <link rel="stylesheet" href="css/site.css">
+  <title>RA — O lampião e suas sombras</title>
+  <link rel="stylesheet" href="css/ar.css">
 </head>
-<body class="has-mobile-nav">
+<body class="ar-standalone">
   <div class="file-protocol-warning">
-    A câmera da RA não funciona abrindo o arquivo direto (file://). Use a versão online em
-    <a href="https://modelagem2026.vercel.app/conteudo/lampiao/ar">https://modelagem2026.vercel.app/conteudo/lampiao/ar</a>
-    ou um servidor local: <code>npm run export:serve</code> → <code>http://localhost:3004</code>
+    A câmera da RA não funciona abrindo o arquivo direto (file://). Sirva esta pasta com um servidor local, por exemplo:
+    <code>npm run ra-kit:serve</code> → <code>http://localhost:3005</code>
   </div>
-  <header class="site-header">
-  <div class="site-header__inner">
-    <a href="index.html"><img class="site-header__logo" src="logos/museu-historico-jacinto-de-sousa.png" alt="Museu Histórico Jacinto de Sousa"></a>
-    <nav><a href="index.html">Início</a><a href="lampiao.html" class="is-active">Exposição</a><a href="sobre.html">Sobre</a></nav>
-  </div>
-</header>
   <div class="ar-viewport" data-ar-viewport>
   <div id="ar-scene-host" style="position:absolute;inset:0;z-index:1"></div>
   <div class="ar-overlay">
@@ -56,9 +49,5 @@
 <script>
   StaticAr.initArPage(window.__AR_CONFIG__);
 </script>
-  <nav class="mobile-nav" aria-label="Alternar entre conteúdo e realidade aumentada">
-  <a href="lampiao.html">Conteúdo</a>
-  <a href="ar.html" class="is-active" data-leave-ar="true">Experiência RA</a>
-</nav>
 </body>
 </html>
